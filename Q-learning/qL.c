@@ -54,7 +54,7 @@ int e_greedy(int x, int y, float e, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 return a;
 }
 
-float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int step_to_converge){
+float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int* step_to_converge){
 
 	int a, i, j, p;
 	float delta = 0;
@@ -124,7 +124,8 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 
 			X = Xnext; Y = Ynext; A = aNext;
 
-			step_to_converge++;
+			(*step_to_converge)++;
+			
 		}
 	}
 
@@ -174,6 +175,32 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 	}
 	printf("\n\n");
 }
+
+void displayGridDirections(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
+	int i, j, action;
+	for(i=0; i<GRID_SIZE; i++){
+		for(j=0; j<GRID_SIZE; j++){
+			action = bestAction(i, j, Q);
+			switch(action){
+				case NORTH: 
+					printf(" ^   ");	
+				break;
+				case EAST: 
+					printf(" >   ");
+				break;
+				case SOUTH:
+					printf(" v   ");
+				break;
+				case WEST: 
+					printf(" <   ");
+				break;
+			}
+		}
+		printf("\n");
+	}
+	printf("\n\n");
+}
+
 
 
 void displayQ(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
