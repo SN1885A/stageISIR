@@ -44,8 +44,7 @@ int main() {
 
 	printf("END Q-learning\n\n\n");
 	
-	displayGridDirections(Q);
-	//test(4, 4, grid, Q);
+	test(4, 4, grid, Q);
 
 return 0;
 }

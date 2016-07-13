@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include "qL.h"
+#include "dyna.h"
 
 int grid[GRID_SIZE][GRID_SIZE];
 float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
+
+Model model;
+PQueue pQueue;
 
 //Actual state
 int X = 0;
@@ -16,7 +19,12 @@ int step_to_converge = 0;
 
 int main() {
 
-	printf("START Q-learning\n");
+	model.list = NULL;
+	model.size = 0;
+
+	pQueue = createPQueue();
+
+	printf("START Dyna-Q\n");
 	srand(time(NULL));
 	//Grid initialization
 	int i, j;
@@ -33,18 +41,20 @@ int main() {
 
 	//Begining
 	float delta = 0;
+	DynaQReturn dynaQReturn;
 	for(i=0; i<NB_TRY; i++) {
-		delta = qLearning(i, Q, X, Y, A, &step_to_converge);
-		printf("delta = %5.3f \n", delta);
-		printf("step to converge = %d ", step_to_converge);
-		printf("\n\n");
-		displayQ(Q);
+		dynaQReturn = dyna_Q(model, Q, X, Y, A, step_to_converge);
+		delta = dynaQReturn.delta;
+		model = dynaQReturn.model;
+		//printf("delta = %5.3f ", delta);
+		//printf("\n\n");
+		//displayQ(Q);
 		if(delta<TETA_Q) break;
 	}
 
 	printf("END Q-learning\n\n\n");
-	
-	displayGridDirections(Q);
+	//displayList(model.list);
+	printf("size : %d\n", model.size);
 	//test(4, 4, grid, Q);
 
 return 0;
