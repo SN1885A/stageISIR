@@ -36,15 +36,17 @@ int main() {
 	for(i=0; i<NB_TRY; i++) {
 		delta = qLearning(i, Q, X, Y, A, &step_to_converge);
 		printf("delta = %5.3f \n", delta);
-		printf("step to converge = %d ", step_to_converge);
+		
 		printf("\n\n");
 		displayQ(Q);
 		if(delta<TETA_Q) break;
 	}
 
 	printf("END Q-learning\n\n\n");
+	displayGridDirections(Q);
+	printf("step to converge = %d\n", step_to_converge);
 	
-	test(4, 4, grid, Q);
+	//test(4, 4, grid, Q);
 
 return 0;
 }

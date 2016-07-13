@@ -145,6 +145,15 @@ void displayList(List L){
     printf("\n");
 }
 
+List deleteHeadL(List L){
+	if (L == NULL) return NULL;
+	else{
+		List r = L;
+		L = L->next;
+		free(r);
+		
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PQueue
@@ -210,3 +219,17 @@ PQueue deleteHead(PQueue P){
 		
 	}
 }
+
+void displayPQueue(PQueue P){
+
+	if(emptyP(P)) printf("PQueue is empty");
+	else{
+		while(P->next != NULL){
+    			printf("((%d, %d), action = %d, priority = %f)\n",P->sa.state.X, P->sa.state.Y, P->sa.action,P->sa.priority);
+   			P = P->next;
+		}
+	}
+	printf("\n");
+}
+
+

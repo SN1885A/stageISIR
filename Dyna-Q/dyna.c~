@@ -55,7 +55,7 @@ int e_greedy(int x, int y, float e, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 return a;
 }
 
-DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int step_to_converge){
+DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge){
 
 	DynaQReturn dynaQReturn;
 	int a, i, j, pas;
@@ -75,8 +75,9 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 			}
 		}
 	}
-	int cpt = 0;
+	int pqueueSize = 0;
 	for(i=0; i<NB_EPISODES; i++){
+		
 		//Select a random state
 		X = rand()%GRID_SIZE; 
 		Y = rand()%GRID_SIZE;
@@ -86,6 +87,9 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 
 		//Or until I find a reward
 		for (pas=0; pas<NB_STEPS; pas++){
+
+			//printf("Pas n°%d\n", pas);
+
 			State firstState;
 			firstState.X = X;
 			firstState.Y = Y;
@@ -150,11 +154,17 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 				element.action = A;
 				element.priority = p;
 				pQueue = addElement(pQueue, element);
+				pqueueSize++;
 			}		
 			
 			int action, reward;
 			while(pQueue != NULL){
+				//printf("pQueue size 1 = %d\n", pqueueSize);
 				PQueueE pQueueE = headP(pQueue);
+				pQueue = deleteHead(pQueue);
+				pqueueSize--;
+				//printf("pQueue size 2 = %d\n", pqueueSize);
+				//if(pQueue == NULL) printf("pqueue is NULL\n");
 				Sasr sasr2 = findSrWithSa(model.list, pQueueE.state, pQueueE.action); 
 				State s, s2;
 				s.X = sasr2.firstState.X;
@@ -166,17 +176,26 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 				Q[s.X][s.Y][action] += ALPHA * (reward + GAMMA * bestQ(s2.X, s2.Y, Q) - Q[s.X][s.Y][action]);
 				List l = findAllStateLeadsToS(model.list, s);
 				if(l != NULL){
-				
+					Sasr sasr3 = head(l);
+					l = deleteHeadL(l);
+					p = fabs(sasr3.reward + GAMMA * bestQ(s.X, s.Y, Q) - Q[sasr3.firstState.X][sasr3.firstState.Y][sasr3.action]);
+					if(p > TETA_P){
+						PQueueE element2;
+						element2.state = sasr3.firstState;
+						element2.action = sasr3.action;
+						element2.priority = p;
+						pQueue = addElement(pQueue, element2);
+						pqueueSize++;
+						//printf("pQueue size 3 = %d\n", pqueueSize);
+					}
 				}
 			}
 
-			/*int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
-
-			Q[X][Y][A] += ALPHA * (r + GAMMA * bestQ(Xnext, Ynext, Q) - Q[X][Y][A]);
+			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 
 			X = Xnext; Y = Ynext; A = aNext;
 
-			step_to_converge++;*/
+			step_to_converge++;
 		}
 	}
 
@@ -279,4 +298,38 @@ void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], float Q[GRID_SIZE][GRID_
 
 	printf("Final state (%d, %d)\n", X, Y);
 	printf("END TEST\n\n");
+}
+
+void displayGridDirections(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
+	int i, j, action;
+	for(i=0; i<GRID_SIZE; i++){
+		for(j=0; j<GRID_SIZE; j++){
+
+			if( i == RWX && j == RWY  ){
+				printf(" +10 ");
+			}
+			else if(i == RW2X && j == RW2Y){
+				printf(" +6  ");
+			}
+			else{
+				action = bestAction(i, j, Q);
+				switch(action){
+					case NORTH: 
+						printf(" ^   ");	
+					break;
+					case EAST: 
+						printf(" >   ");
+					break;
+					case SOUTH:
+						printf(" v   ");
+					break;
+					case WEST: 
+						printf(" <   ");
+					break;
+				}
+			}
+		}
+		printf("\n");
+	}
+	printf("\n\n");
 }

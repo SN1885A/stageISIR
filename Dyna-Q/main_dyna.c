@@ -43,20 +43,17 @@ int main() {
 	float delta = 0;
 	DynaQReturn dynaQReturn;
 	for(i=0; i<NB_TRY; i++) {
-		dynaQReturn = dyna_Q(model, pQueue, Q, X, Y, A, step_to_converge);
+		dynaQReturn = dyna_Q(model, pQueue, Q, X, Y, A, &step_to_converge);
 		delta = dynaQReturn.delta;
 		model = dynaQReturn.model;
 		pQueue = dynaQReturn.pQueue;
 		//printf("delta = %5.3f ", delta);
 		//printf("\n\n");
-		//displayQ(Q);
 		if(delta<TETA_Q) break;
 	}
-
-	printf("END Q-learning\n\n\n");
-	//displayList(model.list);
-	printf("size : %d\n", model.size);
-	//test(4, 4, grid, Q);
+	displayGridDirections(Q);
+	printf("Nb step to converge = %d\n", step_to_converge);
+	printf("END Dyna-Q\n\n\n");
 
 return 0;
 }

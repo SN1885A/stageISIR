@@ -180,20 +180,28 @@ void displayGridDirections(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 	int i, j, action;
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
-			action = bestAction(i, j, Q);
-			switch(action){
-				case NORTH: 
-					printf(" ^   ");	
-				break;
-				case EAST: 
-					printf(" >   ");
-				break;
-				case SOUTH:
-					printf(" v   ");
-				break;
-				case WEST: 
-					printf(" <   ");
-				break;
+			if( i == RWX && j == RWY  ){
+				printf(" +10 ");
+			}
+			else if(i == RW2X && j == RW2Y){
+				printf(" +6  ");
+			}
+			else{
+				action = bestAction(i, j, Q);
+				switch(action){
+					case NORTH: 
+						printf(" ^   ");	
+					break;
+					case EAST: 
+						printf(" >   ");
+					break;
+					case SOUTH:
+						printf(" v   ");
+					break;
+					case WEST: 
+						printf(" <   ");
+					break;
+				}
 			}
 		}
 		printf("\n");

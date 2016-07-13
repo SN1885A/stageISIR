@@ -51,6 +51,7 @@ List deleteElement(List L, Sasr x);
 int alreadyExist(List L, Sasr x);
 Sasr findSrWithSa(List L, State s, int action);
 List findAllStateLeadsToS(List L, State s);
+List deleteHeadL(List L);
 
 void displayList(List L);
 
@@ -66,4 +67,5 @@ PQueue addElement(PQueue P, PQueueE x);
 PQueueE headP(PQueue P);
 PQueue deleteHead(PQueue P);
 
+void displayPQueue(PQueue P);
 

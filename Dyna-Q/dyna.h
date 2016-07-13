@@ -5,16 +5,16 @@
 
 #include "list.h"
 
-#define NB_STEPS 10
-#define NB_EPISODES 1000
-#define NB_TRY 20
+#define NB_STEPS 10	 // 10
+#define NB_EPISODES 1000 // 1 000
+#define NB_TRY 20 	 // 20	
 
 #define NB_ACTIONS 4
 
 #define GRID_SIZE 5
 
 #define REWARD_VALUE 10
-#define REWARD_VALUE2 6
+#define REWARD_VALUE2 3
 
 //Rewards' position
 #define RWX 0
@@ -38,9 +38,7 @@
 #define TETA_Q  0.4
 #define EPSILON 0.5
 
-#define TETA_Q  0.4
-
-#define TETA_P 0.5
+#define TETA_P 0.4
 
 #define Q_INITIAL  0.0
 
@@ -63,7 +61,7 @@ int bestActionForTest(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 int e_greedy(int x, int y, float e, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 //Dyna-Q function 
-DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int step_to_converge);
+DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int* step_to_converge);
 
 //Test function with (X, Y) the starter state
 void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
@@ -79,5 +77,7 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]);
 //Display Q-table
 void displayQ(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
+//Display the result grid 
+void displayGridDirections(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 
