@@ -5,7 +5,7 @@
 typedef struct PQueueE{
 	int i;
 	double priority;
-}PQueueE;
+}PQueueE
 
 typedef struct cellP{
 	PQueueE element;

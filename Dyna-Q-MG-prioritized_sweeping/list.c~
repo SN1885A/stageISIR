@@ -9,7 +9,7 @@ int emptyP(PQueue P){ return (P == NULL); }
 PQueue addHeadP(PQueue P, PQueueE x){
 	PQueue newQueue;
 	newQueue=(PQueue)malloc(sizeof(*newQueue));
-	newQueue->element=x;
+	newQueue->sa=x;
 	newQueue->next=P;
 
 return newQueue;
@@ -19,7 +19,7 @@ PQueue addQueueP(PQueue P, PQueueE x){
 
 	if(P==NULL){
 		P=(PQueue)malloc(sizeof(*P));
-		P->element=x;
+		P->sa=x;
 		P->next=NULL;
 	}
 	else

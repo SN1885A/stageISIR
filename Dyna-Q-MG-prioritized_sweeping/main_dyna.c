@@ -58,8 +58,22 @@ int main() {
 	X = rand()%GRID_SIZE; 
 	Y = rand()%GRID_SIZE;
 	
-	generateVect(vect, X, Y, 2);
-	dyna_MG(theta, b, F, pQueue, Q, X, Y, A, step_to_converge);
+	//dyna_MG(theta, b, F, pQueue, Q, X, Y, A, step_to_converge);
+
+	double mat1[2][2];
+	mat1[0][0] = 2.0;
+	mat1[0][1] = 1.0;
+	mat1[1][0] = 0.0;
+	mat1[1][1] = 3.0;
+	double mat2[2];
+	mat2[0] = 2.0;
+	mat2[1] = 3.0;
+	double result[2];
+	multiplicationMatrix2(result, mat2, mat1, 1, 2, 2);
+	
+	for(i=0; i<2;i++)
+	printf("| %f |\n", result[i]);
+
 	/*for(i=0; i<NB_TRY; i++) {
 		dynaQReturn = dyna_Q(model, pQueue, Q, X, Y, A, &step_to_converge);
 		delta = dynaQReturn.delta;

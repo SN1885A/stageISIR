@@ -70,15 +70,52 @@ return result;
 
 void multiplicationMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE][VECT_SIZE], double mat2[VECT_SIZE][1], int mat1L, int mat1C, int mat2C){
 
-	int i, j;
+	int i, j, z;
+	for(i=0; i<VECT_SIZE; i++) result[i] = 0;
+	for(i = 0; i<mat1L; i++)
+		for(j = 0; j<mat2C; j++)
+			for(z = 0; z<mat1C; z++)
+				result[i] += mat1[i][z]*mat2[z][j];
+}
+
+//void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE], int mat1L, int mat1C, int mat2C){
+void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE2], int mat1L, int mat1C, int mat2C){
+	int i, j, z;
+	for(i=0; i<VECT_SIZE; i++) result[i] = 0;
 	for(i = 0; i<mat1L; i++){
-		for(j = 0; j<mat1C; j++){
-			int z;
-			result[i] = 0;
+		for(j = 0; j<mat2C; j++){
 			for(z = 0; z<mat1C; z++){
-				result[i] += mat1[i][z]*mat2[z][i];
+				result[j] += mat1[i][z]*mat2[z][j];
+				
 			}
 		}
+	}
+}
+
+double multiplicationMatrixOneValue(double mat1[VECT_SIZE], double mat2[VECT_SIZE]){
+
+	int i;
+	double result = 0;
+	for(i = 0; i<VECT_SIZE; i++){
+		result += mat1[i]*mat2[i];
+	}
+
+return result;
+}
+
+void multiplicationMatrixScalar(double result[VECT_SIZE], double mat[VECT_SIZE], double lambda){
+
+	int i;
+	for(i = 0; i<VECT_SIZE; i++){
+		result[i] = mat[i]*lambda;
+	}
+}
+
+void additionMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE], double mat2[VECT_SIZE]){
+
+	int i;
+	for(i = 0; i<VECT_SIZE; i++){
+		result[i] = mat1[i]+mat2[i];
 	}
 }
 
@@ -112,21 +149,18 @@ void generateVect(double vect[VECT_SIZE], int X, int Y, int action){
 
 DynaQReturn dyna_MG(double theta[VECT_SIZE], double b[VECT_SIZE], double F[VECT_SIZE][VECT_SIZE], PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge){
 
+	//float Qold[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
+	int i, j, a, diff;
+	double delta, r, priority;
 	DynaQReturn dynaQReturn;
-	int a, i, j, pas, pqueueSize = 0;
-	float delta = 0;
-	float diff = 0;
-	float p;
-	float Qold[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
-
 	//Save the old Q-table
-	for(i=0; i<GRID_SIZE; i++){
+	/*for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
 			for(a=0; a<NB_ACTIONS; a++){ 
 				Qold[i][j][a] = Q[i][j][a];
 			}
 		}
-	}
+	}*/
 
 	//for(i=0; i<NB_EPISODES; i++){
 		
@@ -138,31 +172,72 @@ DynaQReturn dyna_MG(double theta[VECT_SIZE], double b[VECT_SIZE], double F[VECT_
 		A = e_greedy(X, Y, EPSILON, Q);
 		
 		//Generate a feature vector;
-		double vect[VECT_SIZE];
-		generateVect(vect, X, Y, A);
+		double featureState1[VECT_SIZE];
+		double featureState1AlphaDelta[VECT_SIZE];
+		double featureState2[VECT_SIZE];
+		generateVect(featureState1, X, Y, A);
+
+		//delta updating
+		multiplicationMatrix(featureState2, F, featureState1, 2, 2, 1);
+		r = multiplicationMatrixOneValue(featureState1, b); 
+		delta = r + GAMMA*multiplicationMatrixOneValue(theta, featureState2)-multiplicationMatrixOneValue(theta, featureState1);
+		
+		//theta updating
+		multiplicationMatrixScalar(featureState1AlphaDelta, featureState1, ALPHA*delta);
+		additionMatrix(theta, theta, featureState1AlphaDelta);
+
+		//b updating
+		double tmp = multiplicationMatrixOneValue(b, featureState1); 
+		double lambda = ALPHA*(r-tmp);
+		double vectTmp[VECT_SIZE];
+		multiplicationMatrixScalar(vectTmp, featureState1, lambda);
+		additionMatrix(b, b, vectTmp);
+
+		for(i=0; i<VECT_SIZE; i++){
+			if(featureState1 != 0){ //ou seuiller
+				//priority = abs(delta*featureState1(i));	
+				//PQueueE pQueueE;
+				//pQueueE.priority = priority;
+				//pQueueE.i = i;
+				//addElement(pQueue, pQueueE);
+			}
+		}
+
+		while(pQueue != NULL){
+			PQueueE head = headP(pQueue);
+			int indice = head.i;
+			for(j=0; j<VECT_SIZE; j++){
+				if(F[indice][j] != 0){
+					//delta = b(j)+GAMMA*tmp - theta(j);
+
+				}
+			}
+		}
+
+
 
 		//Or until I find a reward
 		//for (pas=0; pas<NB_STEPS; pas++){
-			double vect2[VECT_SIZE];
+			/*double vect2[VECT_SIZE];
 			multiplicationMatrix(vect2, F, vect, VECT_SIZE, VECT_SIZE, 1);
 			int s;
 			for(s=0; s<VECT_SIZE; s++)
-			printf("| %f |\n", vect2[s]);
+			printf("| %f |\n", vect2[s]);*/
 		//}
 			
 	//}
 
-	for(i=0; i<GRID_SIZE; i++){
+	/*for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
 			for(a=0; a<NB_ACTIONS; a++){
 				diff = fabsf(Qold[i][j][a] - Q[i][j][a]);
 				if (delta < diff) delta = diff;
 			}
 		}
-	}
+	}*/
 
-dynaQReturn.delta = delta;
-dynaQReturn.pQueue = pQueue;
+//dynaQReturn.delta = delta;
+//dynaQReturn.pQueue = pQueue;
 
 return dynaQReturn;
 

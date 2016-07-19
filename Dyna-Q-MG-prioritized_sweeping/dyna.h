@@ -66,14 +66,23 @@ int bestActionForTest(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 int e_greedy(int x, int y, float e, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 //Dyna-MG function 
-DynaQReturn dyna_MG(double theta[VECT_SIZE], double b[VECT_SIZE], double F[VECT_SIZE][VECT_SIZE], PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge);
+void multiplicationMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE][VECT_SIZE], double mat2[VECT_SIZE][1], int mat1L, int mat1C, int mat2C);
 
 //Test function with (X, Y) the starter state
 void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 double generateGaussian(int var, int ectype, double d);
 
+double multiplicationMatrixOneValue(double mat1[VECT_SIZE], double mat2[VECT_SIZE]);
+
+void multiplicationMatrixScalar(double result[VECT_SIZE], double mat[VECT_SIZE], double lambda);
+
 void multiplicationMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE][VECT_SIZE], double mat2[VECT_SIZE][1], int mat1L, int mat1C, int mat2C);
+
+//void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE], int mat1L, int mat1C, int mat2C);
+void multiplicationMatrix2(double result[2], double mat1[1][2], double mat2[2][2], int mat1L, int mat1C, int mat2C);
+
+void additionMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE], double mat2[VECT_SIZE]);
 
 void generateVect(double vect[VECT_SIZE], int X, int Y, int action);
 
