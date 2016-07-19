@@ -78,8 +78,7 @@ void multiplicationMatrix(double result[VECT_SIZE], double mat1[VECT_SIZE][VECT_
 				result[i] += mat1[i][z]*mat2[z][j];
 }
 
-//void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE], int mat1L, int mat1C, int mat2C){
-void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE2], int mat1L, int mat1C, int mat2C){
+void multiplicationMatrix2(double result[VECT_SIZE], double mat1[1][VECT_SIZE], double mat2[VECT_SIZE][VECT_SIZE], int mat1L, int mat1C, int mat2C){
 	int i, j, z;
 	for(i=0; i<VECT_SIZE; i++) result[i] = 0;
 	for(i = 0; i<mat1L; i++){
@@ -190,26 +189,37 @@ DynaQReturn dyna_MG(double theta[VECT_SIZE], double b[VECT_SIZE], double F[VECT_
 		double tmp = multiplicationMatrixOneValue(b, featureState1); 
 		double lambda = ALPHA*(r-tmp);
 		double vectTmp[VECT_SIZE];
+		double unitBasisVect[VECT_SIZE];
 		multiplicationMatrixScalar(vectTmp, featureState1, lambda);
 		additionMatrix(b, b, vectTmp);
 
 		for(i=0; i<VECT_SIZE; i++){
 			if(featureState1 != 0){ //ou seuiller
-				//priority = abs(delta*featureState1(i));	
-				//PQueueE pQueueE;
-				//pQueueE.priority = priority;
-				//pQueueE.i = i;
-				//addElement(pQueue, pQueueE);
+				priority = abs(delta*featureState1[i]);	
+				PQueueE pQueueE;
+				pQueueE.priority = priority;
+				pQueueE.i = i;
+				addElement(pQueue, pQueueE);
 			}
+		unitBasisVect[i] = 0;
 		}
 
 		while(pQueue != NULL){
 			PQueueE head = headP(pQueue);
 			int indice = head.i;
+			double tmp[VECT_SIZE];
+			double tmp2;
 			for(j=0; j<VECT_SIZE; j++){
 				if(F[indice][j] != 0){
-					//delta = b(j)+GAMMA*tmp - theta(j);
-
+					unitBasisVect[j] = 1;
+					multiplicationMatrix2(tmp, theta, F, 1, VECT_SIZE, VECT_SIZE);
+					tmp2 = multiplicationMatrixOneValue(tmp, unitBasisVect); 
+					delta = b[j] + GAMMA*tmp2 - theta[j];
+					theta[j] += ALPHA*delta;
+					PQueueE pQueueE2;
+					pQueueE2.priority = abs(delta);
+					pQueueE2.i = j;
+					addElement(pQueue, pQueueE2);
 				}
 			}
 		}
