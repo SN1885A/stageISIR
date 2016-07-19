@@ -161,81 +161,79 @@ DynaQReturn dyna_MG(double theta[VECT_SIZE], double b[VECT_SIZE], double F[VECT_
 		}
 	}*/
 
-	//for(i=0; i<NB_EPISODES; i++){
+	for(i=0; i<NB_EPISODES; i++){
 		
 		//Select a random state
 		X = rand()%GRID_SIZE; 
 		Y = rand()%GRID_SIZE;
 
+		double featureState1[VECT_SIZE];
+		double featureState1AlphaDelta[VECT_SIZE];
+		double featureState2[VECT_SIZE];
+
 		//Select an action with e-greedy policy
 		A = e_greedy(X, Y, EPSILON, Q);
 		
 		//Generate a feature vector;
-		double featureState1[VECT_SIZE];
-		double featureState1AlphaDelta[VECT_SIZE];
-		double featureState2[VECT_SIZE];
 		generateVect(featureState1, X, Y, A);
 
-		//delta updating
-		multiplicationMatrix(featureState2, F, featureState1, 2, 2, 1);
-		r = multiplicationMatrixOneValue(featureState1, b); 
-		delta = r + GAMMA*multiplicationMatrixOneValue(theta, featureState2)-multiplicationMatrixOneValue(theta, featureState1);
+		//Or until I find a reward
+		for (pas=0; pas<NB_STEPS; pas++){
+			
+
+			//delta updating
+			multiplicationMatrix(featureState2, F, featureState1, 2, 2, 1);
+			r = multiplicationMatrixOneValue(featureState1, b); 
+			delta = r + GAMMA*multiplicationMatrixOneValue(theta, featureState2)-multiplicationMatrixOneValue(theta, featureState1);
 		
-		//theta updating
-		multiplicationMatrixScalar(featureState1AlphaDelta, featureState1, ALPHA*delta);
-		additionMatrix(theta, theta, featureState1AlphaDelta);
+			//theta updating
+			multiplicationMatrixScalar(featureState1AlphaDelta, featureState1, ALPHA*delta);
+			additionMatrix(theta, theta, featureState1AlphaDelta);
 
-		//b updating
-		double tmp = multiplicationMatrixOneValue(b, featureState1); 
-		double lambda = ALPHA*(r-tmp);
-		double vectTmp[VECT_SIZE];
-		double unitBasisVect[VECT_SIZE];
-		multiplicationMatrixScalar(vectTmp, featureState1, lambda);
-		additionMatrix(b, b, vectTmp);
+			//b updating
+			double tmp = multiplicationMatrixOneValue(b, featureState1); 
+			double lambda = ALPHA*(r-tmp);
+			double vectTmp[VECT_SIZE];
+			double unitBasisVect[VECT_SIZE];
+			multiplicationMatrixScalar(vectTmp, featureState1, lambda);
+			additionMatrix(b, b, vectTmp);
 
-		for(i=0; i<VECT_SIZE; i++){
-			if(featureState1 != 0){ //ou seuiller
-				priority = abs(delta*featureState1[i]);	
-				PQueueE pQueueE;
-				pQueueE.priority = priority;
-				pQueueE.i = i;
-				addElement(pQueue, pQueueE);
+			for(i=0; i<VECT_SIZE; i++){
+				if(featureState1 != 0){ //ou seuiller
+					priority = abs(delta*featureState1[i]);	
+					PQueueE pQueueE;
+					pQueueE.priority = priority;
+					pQueueE.i = i;
+					addElement(pQueue, pQueueE);
+				}
+			unitBasisVect[i] = 0;
 			}
-		unitBasisVect[i] = 0;
-		}
 
-		while(pQueue != NULL){
-			PQueueE head = headP(pQueue);
-			int indice = head.i;
-			double tmp[VECT_SIZE];
-			double tmp2;
-			for(j=0; j<VECT_SIZE; j++){
-				if(F[indice][j] != 0){
-					unitBasisVect[j] = 1;
-					multiplicationMatrix2(tmp, theta, F, 1, VECT_SIZE, VECT_SIZE);
-					tmp2 = multiplicationMatrixOneValue(tmp, unitBasisVect); 
-					delta = b[j] + GAMMA*tmp2 - theta[j];
-					theta[j] += ALPHA*delta;
-					PQueueE pQueueE2;
-					pQueueE2.priority = abs(delta);
-					pQueueE2.i = j;
-					addElement(pQueue, pQueueE2);
+			while(pQueue != NULL){
+				PQueueE head = headP(pQueue);
+				int indice = head.i;
+				double tmp[VECT_SIZE];
+				double tmp2;
+			
+				//Q[][][] += ALPHA * (reward + GAMMA * bestQ(s2.X, s2.Y, Q) - Q[s.X][s.Y][action]);
+
+				for(j=0; j<VECT_SIZE; j++){
+					if(F[indice][j] != 0){
+						unitBasisVect[j] = 1;
+						multiplicationMatrix2(tmp, theta, F, 1, VECT_SIZE, VECT_SIZE);
+						tmp2 = multiplicationMatrixOneValue(tmp, unitBasisVect); 
+						delta = b[j] + GAMMA*tmp2 - theta[j];
+						theta[j] += ALPHA*delta;
+						PQueueE pQueueE2;
+						pQueueE2.priority = abs(delta);
+						pQueueE2.i = j;
+						addElement(pQueue, pQueueE2);
+					}
 				}
 			}
 		}
-
-
-
-		//Or until I find a reward
-		//for (pas=0; pas<NB_STEPS; pas++){
-			/*double vect2[VECT_SIZE];
-			multiplicationMatrix(vect2, F, vect, VECT_SIZE, VECT_SIZE, 1);
-			int s;
-			for(s=0; s<VECT_SIZE; s++)
-			printf("| %f |\n", vect2[s]);*/
-		//}
 			
-	//}
+	}
 
 	/*for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
