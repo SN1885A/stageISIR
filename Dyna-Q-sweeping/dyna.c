@@ -22,11 +22,12 @@ float bestQ(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 int bestAction(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 	float qm = -1000;
 	int a, action = 0;
-  	for (a=0; a<NB_ACTIONS; a++) 
+  	for (a=0; a<NB_ACTIONS; a++){ 
     		if (qm<Q[i][j][a]){
       			qm = Q[i][j][a];
       			action = a;
    		}
+	}
 return action;
 }
 

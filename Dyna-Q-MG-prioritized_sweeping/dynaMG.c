@@ -9,40 +9,24 @@
 //Engine
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float bestQ(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-  float qm = -1000;
-  int a;
-  for (a=0; a<NB_ACTIONS; a++) 
-    if (qm<Q[i][j][a]) {
-      qm = Q[i][j][a];
-    }
-  return qm;
-}
-
-int bestAction(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1000;
-	int a, action = 0;
-  	for (a=0; a<NB_ACTIONS; a++) 
-    		if (qm<Q[i][j][a]){
-      			qm = Q[i][j][a];
+int bestAction(int i, int j, double theta[PHI_SIZE]){
+	double qm = -1000.0, result;
+	int a, z, action = 0;
+	double phi[PHI_SIZE];
+	
+  	for (a=0; a<NB_ACTIONS; a++){
+		generateVect(phi, i, j, a);
+		result = multMatrixOneValue(phi, theta); 
+    		if (qm<result){
+      			qm = result;
       			action = a;
    		}
+	}
+printf("action = %d\n", action);
 return action;
 }
 
-int bestActionForTest(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1;
-	int a, action = 0;
-	if( (i==RWX && j==RWY) || (i==RW2X && j==RW2Y) ) return WIN;
-	for (a=0; a<NB_ACTIONS; a++)
-		if (qm<Q[i][j][a]){
-			qm = Q[i][j][a];
-			action = a;
-		}
-return action;
-}
-
-int e_greedy(int x, int y, float e, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
+int e_greedy(int x, int y, float e, double theta[PHI_SIZE]){
 
 	int a = 0;
 	double r = (double)rand()/RAND_MAX;
@@ -50,7 +34,7 @@ int e_greedy(int x, int y, float e, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
 	if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
-	else a = bestAction(x, y, Q);
+	else a = bestAction(x, y, theta);
 	
 return a;
 }
@@ -150,6 +134,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y, int action){
 
 	int ind = 0, i, j;
 	double distance;
+	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
 			ind = j*GRID_SIZE+i;
@@ -174,24 +159,16 @@ void generateVect(double phi[PHI_SIZE], int X, int Y, int action){
 	}
 }
 
-double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge){
+void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, int X, int Y, int A,  int* step_to_converge){
 	
 	//Declarations
 	double Qold[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
-	int i, j, e, a, pas, diff;
+	int i, j, e, a, pas;
+	float d = 0, diff = 0;
 	double delta, r, priority;
 	double phi1[PHI_SIZE];
 	double phi2[PHI_SIZE];
 	double AlphaDeltaPhi1[PHI_SIZE];
-
-	//Save the old Q-table
-	for(i=0; i<GRID_SIZE; i++){
-		for(j=0; j<GRID_SIZE; j++){
-			for(a=0; a<NB_ACTIONS; a++){ 
-				Qold[i][j][a] = Q[i][j][a];
-			}
-		}
-	}
 
 	for(e=0; e<NB_EPISODES; e++){
 		
@@ -200,7 +177,7 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 		Y = rand()%GRID_SIZE;
 		
 		//Select an action with e-greedy policy
-		A = e_greedy(X, Y, EPSILON, Q);
+		A = e_greedy(X, Y, EPSILON, theta);
 		
 		//Generate a feature vector
 		generateVect(phi1, X, Y, A);
@@ -313,30 +290,15 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 					}
 				}
 			}
-
-			Q[X][Y][A] = multMatrixOneValue(phi1, theta);
 			
 			(*step_to_converge)++;
-			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
+			int aNext = e_greedy(Xnext, Ynext, EPSILON, theta);
 			X = Xnext; Y = Ynext; A = aNext;
 
 			(*step_to_converge)++;
 		}
 			
 	}
-
-	for(i=0; i<GRID_SIZE; i++){
-		for(j=0; j<GRID_SIZE; j++){
-			for(a=0; a<NB_ACTIONS; a++){
-				diff = fabsf(Qold[i][j][a] - Q[i][j][a]);
-				if (delta < diff) delta = diff;
-			}
-		}
-	}
-
-return delta;
-
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,56 +335,7 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 }
 
 
-void displayQ(double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-
-	int i, j, a;
-	
-  	for (i=0; i<GRID_SIZE; i++){
-    		for (j=0; j<GRID_SIZE; j++){
-			for(a=0; a<NB_ACTIONS; a++) printf("%2.0f ", Q[i][j][a]);
-     			printf("|");
-    		}
-    		printf("\n");
-	}
-}
-
-void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-
-	int bestA = 0;
-
-	printf("START TEST\n\n");
-	printf("First state (%d, %d)\n\n", X, Y);
-
-	while(bestA != WIN){
-		bestA = bestActionForTest(X, Y, Q);
-		displayConfig(X, Y, grid);
-		switch (bestA) {
-			case NORTH: 
-				//We cannot move
-				if(X==0)  printf("cannot move");
-				else X = X - 1; 
-			break;
-			case EAST: 
-				if(Y==GRID_SIZE-1)  printf("cannot move");
-				else Y = Y + 1;  
-			break;
-			case SOUTH:
-				if(X==GRID_SIZE-1)  printf("cannot move");
-				else X = X + 1; 
-			break;
-			case WEST: 
-				if(Y==0)  printf("cannot move");
-				else Y = Y - 1;
-				break;
-				
-		}
-	}
-
-	printf("Final state (%d, %d)\n", X, Y);
-	printf("END TEST\n\n");
-}
-
-void displayGridDirections(double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
+void displayGridDirections(double theta[PHI_SIZE]){
 	int i, j, action;
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
@@ -434,7 +347,8 @@ void displayGridDirections(double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 				printf(" +6  ");
 			}
 			else{
-				action = bestAction(i, j, Q);
+				action = bestAction(i, j, theta);
+				printf("action 2 = %d\n", action);
 				switch(action){
 					case NORTH: 
 						printf(" ^   ");	

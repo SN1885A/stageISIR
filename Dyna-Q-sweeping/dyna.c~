@@ -195,7 +195,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 
 			X = Xnext; Y = Ynext; A = aNext;
 
-			step_to_converge++;
+			(*step_to_converge)++;
 		}
 	}
 

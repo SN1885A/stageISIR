@@ -7,8 +7,7 @@
 
 //Experimentation definition
 #define NB_STEPS 10	 // 10
-#define NB_EPISODES 1000 // 1 000
-#define NB_TRY 20 	 // 20	
+#define NB_EPISODES 2000 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
@@ -45,44 +44,32 @@
 
 //All constants
 #define ALPHA 	0.1
-#define GAMMA 	0.9
-#define TETA_Q  0.4
-#define EPSILON 0.5
+#define GAMMA 	0.3
 
-#define TETA_P 0.4
+#define EPSILON 0.5
 
 //Q initial value
 #define Q_INITIAL  0.0
-#define WIN 7
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Find the best Q-value from a given state (i, j)
-float bestQ(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
-
 //Choose the best action from a given state (i, j)
-int bestAction(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
-
-//Same but return WIN value when you're on a reward state
-int bestActionForTest(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
+int bestAction(int i, int j, double theta[PHI_SIZE]);
 
 //Select an action with a e-greedy policy
-int e_greedy(int x, int y, float e, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
+int e_greedy(int x, int y, float e, double theta[PHI_SIZE]);
 
 //Dyna-MG function 
-//double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge);
-
-//Test function with (X, Y) the starter state
-void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
+void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, int X, int Y, int A,  int* step_to_converge);
 
 double generateGaussian(int var, int ectype, double d);
 
 double multMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
-void multiplicationMatrixScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
+void multiplicationVectorScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
 
 void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE]);
 
@@ -105,10 +92,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y, int action);
 //Display the grid configuration (rewards, our position etc..)
 void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]);
 
-//Display Q-table
-void displayQ(double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
-
 //Display the result grid 
-void displayGridDirections(double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
+void displayGridDirections(double theta[PHI_SIZE]);
 
 
