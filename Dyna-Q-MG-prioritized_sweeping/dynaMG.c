@@ -112,7 +112,7 @@ double multMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
 return result;
 }
 
-void multiplicationMatrixScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda){
+void multiplicationVectorScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda){
 
 	int i;
 	for(i = 0; i<PHI_SIZE; i++){
@@ -120,11 +120,29 @@ void multiplicationMatrixScalar(double result[PHI_SIZE], double mat[PHI_SIZE], d
 	}
 }
 
-void additionMatrix(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
+void additionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
 
 	int i;
 	for(i = 0; i<PHI_SIZE; i++){
 		result[i] = mat1[i]+mat2[i];
+	}
+}
+
+void soustractionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
+
+	int i;
+	for(i = 0; i<PHI_SIZE; i++){
+		result[i] = mat1[i]-mat2[i];
+	}
+}
+
+void additionMatrix(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]){
+
+	int i, j;
+	for(i = 0; i<PHI_SIZE; i++){
+		for(j = 0; j<PHI_SIZE; j++){
+			result[i][j] = mat1[i][j]+mat2[i][j];
+		}
 	}
 }
 
@@ -196,13 +214,11 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 			int r = 0;
 
 			if ((X==RWX) && (Y==RWY)) {  
-				//R+= 10*gk; 
 				r = REWARD_VALUE;
 				Xnext = RX; 
 				Ynext = RY;
 			}
- 			else if ((X==RW2X) && (Y==RW2Y)) {  
-				//R+= 10*gk; 
+ 			else if ((X==RW2X) && (Y==RW2Y)) {
 				r = REWARD_VALUE2;
 				Xnext = R2X; 
 				Ynext = R2Y;
@@ -235,33 +251,42 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 			delta = r + GAMMA*multMatrixOneValue(theta, phi2)-multMatrixOneValue(theta, phi1);
 		
 			//theta updating
-			multiplicationMatrixScalar(AlphaDeltaPhi1, phi1, ALPHA*delta);
-			additionMatrix(theta, theta, AlphaDeltaPhi1);
+			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, ALPHA*delta);
+			additionVector(theta, theta, AlphaDeltaPhi1);
 
 			//F updating
-			
-		
+			double resultTmp[PHI_SIZE];
+			double resultTmp2[PHI_SIZE];
+			double resultTmp3[PHI_SIZE];
+			double resultTmp4[PHI_SIZE][PHI_SIZE];
+			multMatrixCarreCol(resultTmp, F, phi1);				//F*phi
+			soustractionVector(resultTmp2, phi2, resultTmp);		//phi'-F*phi
+			multiplicationVectorScalar(resultTmp3, resultTmp2, ALPHA);	//alpha*(phi'-F*phi)
+			multMatrixColL(resultTmp4, resultTmp3, phi1);			//alpha*(phi'-F*phi)*(phi)T
+			additionMatrix(F, F, resultTmp4);				//F <- F + alpha*(phi'-F*phi)*(phi)T
+
 			//b updating
-			double tmp = multMatrixOneValue(b, phi1); 
-			double lambda = ALPHA*(r-tmp);
+			double tmp = multMatrixOneValue(b, phi1); 			//(b)T*phi
+			double lambda = ALPHA*(r-tmp);					//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
-			double unitBasisVect[PHI_SIZE];
-			multiplicationMatrixScalar(vectTmp, phi1, lambda);
-			additionMatrix(b, b, vectTmp);
+			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
+			additionVector(b, b, vectTmp);					//b <- b + alpha*(r - (b)T*phi)
 		
 			//Replay
+			double unitBasisVect[PHI_SIZE];
 			for(i=0; i<PHI_SIZE; i++){
-				if(phi1 != 0){ //ou seuiller
+				if(phi1[i] != 0){ //ou seuiller
 					priority = abs(delta*phi1[i]);	
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
 					pQueueE.i = i;
 					addElement(pQueue, pQueueE);
 				}
-			unitBasisVect[i] = 0;
+				unitBasisVect[i] = 0;
 			}
 
 			while(pQueue != NULL){
+
 				PQueueE head = headP(pQueue);
 				int indice = head.i;
 				double tmp[PHI_SIZE];
@@ -271,11 +296,18 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 
 				for(j=0; j<PHI_SIZE; j++){
 					if(F[indice][j] != 0){
+						//Initialization of the unit basis vetor ej
 						unitBasisVect[j] = 1;
-						multMatrixLCarre(tmp, theta, F, 1, PHI_SIZE, PHI_SIZE);
+
+						multMatrixLCarre(tmp, theta, F);		//(theta)T*F
 						tmp2 = multMatrixOneValue(tmp, unitBasisVect); 
+
 						delta = b[j] + GAMMA*tmp2 - theta[j];
+						
+						//Updating theta
 						theta[j] += ALPHA*delta;
+						
+						//Put j on the PQueue with priority |delta|
 						PQueueE pQueueE2;
 						pQueueE2.priority = abs(delta);
 						pQueueE2.i = j;
@@ -283,18 +315,23 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 					}
 				}
 			}
+
+			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
+			X = Xnext; Y = Ynext; A = aNext;
+
+			(*step_to_converge)++;
 		}
 			
 	}
 
-	/*for(i=0; i<GRID_SIZE; i++){
+	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
 			for(a=0; a<NB_ACTIONS; a++){
 				diff = fabsf(Qold[i][j][a] - Q[i][j][a]);
 				if (delta < diff) delta = diff;
 			}
 		}
-	}*/
+	}
 
 return delta;
 

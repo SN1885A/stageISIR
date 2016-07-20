@@ -82,7 +82,7 @@ double generateGaussian(int var, int ectype, double d);
 
 double multMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
-void multiplicationMatrixScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
+void multiplicationVectorScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
 
 void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE]);
 
@@ -90,7 +90,11 @@ void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat
 
 void multMatrixColL(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
-void additionMatrix(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+void additionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+
+void soustractionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+
+void additionMatrix(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]);
 
 void generateVect(double phi[PHI_SIZE], int X, int Y, int action);
 
