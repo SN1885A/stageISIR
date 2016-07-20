@@ -118,9 +118,11 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 			}
 
 			
-			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
+			//int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 
 			Q[X][Y][A] += ALPHA * (r + GAMMA * bestQ(Xnext, Ynext, Q) - Q[X][Y][A]);
+
+			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 
 			X = Xnext; Y = Ynext; A = aNext;
 

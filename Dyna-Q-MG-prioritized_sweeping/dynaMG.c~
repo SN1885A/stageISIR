@@ -286,12 +286,11 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 			}
 
 			while(pQueue != NULL){
+
 				PQueueE head = headP(pQueue);
 				int indice = head.i;
 				double tmp[PHI_SIZE];
 				double tmp2;
-			
-				//Q[][][] += ALPHA * (reward + GAMMA * bestQ(s2.X, s2.Y, Q) - Q[s.X][s.Y][action]);
 
 				for(j=0; j<PHI_SIZE; j++){
 					if(F[indice][j] != 0){
@@ -315,6 +314,9 @@ double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PH
 				}
 			}
 
+			Q[X][Y][A] += multMatrixOneValue(phi1, theta);
+			
+			(*step_to_converge)++;
 			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 			X = Xnext; Y = Ynext; A = aNext;
 

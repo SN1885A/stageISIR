@@ -52,7 +52,7 @@ int main() {
 		if(delta<TETA_Q) break;
 	}
 	displayGridDirections(Q);
-	printf(
+	printf("Nb step to converge = %d\n", step_to_converge);
 	printf("END Dyna-Q\n\n\n");
 
 return 0;

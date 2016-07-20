@@ -57,36 +57,16 @@ int main() {
 	float delta = 0;
 
 	printf("START Dyna-Q-MG\n");
-	
-	//dyna_MG(theta, b, F, pQueue, Q, X, Y, A, &step_to_converge);
 
-	double mat1[2][2];
-	mat1[0][0] = 2.0;
-	mat1[0][1] = 1.0;
-	//mat1[1][0] = 0.0;
-	//mat1[1][1] = 3.0;
-	double mat2[2];
-	mat2[0] = 4.0;
-	mat2[1] = 3.0;
-	double result[2][2];
-	multiplicationMatrix3(result, mat1, mat2);
-	
-	for(i=0; i<2;i++){
-		for(j=0; j<2;j++){
-			printf("| %f \t", result[i][j]);
-		}
-	printf("|\n");
-	}
-
-	/*for(i=0; i<NB_TRY; i++) {
-		delta = dyna_Q(model, pQueue, Q, X, Y, A, &step_to_converge);
-		//printf("delta = %5.3f\n\n", delta);
+	for(i=0; i<NB_TRY; i++) {
+		delta = dyna_MG(theta, b, F, pQueue, Q, X, Y, A, &step_to_converge);
 		if(delta<TETA_Q) break;
-
 	}
+
 	displayGridDirections(Q);
 	printf("Nb step to converge = %d\n", step_to_converge);
-	printf("END Dyna-Q-MG\n\n\n");*/
+
+	printf("END Dyna-Q-MG\n\n\n");
 
 return 0;
 }
