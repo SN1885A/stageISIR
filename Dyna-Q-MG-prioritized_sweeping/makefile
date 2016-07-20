@@ -1,16 +1,16 @@
-all: main_dyna
+all: main_dynaMG
 
-list.o: list.c list.h 
-	gcc -c list.c
+listMG.o: listMG.c listMG.h 
+	gcc -c listMG.c
 
-dyna.o: dyna.c dyna.h 
-	gcc -c dyna.c
+dynaMG.o: dynaMG.c dynaMG.h 
+	gcc -c dynaMG.c
 
-main_dyna.o: main_dyna.c dyna.h
-	gcc -c main_dyna.c
+main_dynaMG.o: main_dynaMG.c dynaMG.h
+	gcc -c main_dynaMG.c
 
-main_dyna: main_dyna.o dyna.o list.o
-	gcc -o main_dyna main_dyna.o dyna.o list.o -lm -Wall
+main_dynaMG: main_dynaMG.o dynaMG.o listMG.o
+	gcc -o main_dynaMG main_dynaMG.o dynaMG.o listMG.o -lm -Wall
 
 clean:
 	rm -f *.o
