@@ -58,25 +58,28 @@ int main() {
 
 	printf("START Dyna-Q-MG\n");
 	
-	dyna_MG(theta, b, F, pQueue, Q, X, Y, A, &step_to_converge);
+	//dyna_MG(theta, b, F, pQueue, Q, X, Y, A, &step_to_converge);
 
-	/*double mat1[2][2];
+	double mat1[2][2];
 	mat1[0][0] = 2.0;
 	mat1[0][1] = 1.0;
-	mat1[1][0] = 0.0;
-	mat1[1][1] = 3.0;
+	//mat1[1][0] = 0.0;
+	//mat1[1][1] = 3.0;
 	double mat2[2];
-	mat2[0] = 2.0;
+	mat2[0] = 4.0;
 	mat2[1] = 3.0;
-	double result[2];
-	multiplicationMatrix2(result, mat2, mat1, 1, 2, 2);
+	double result[2][2];
+	multiplicationMatrix3(result, mat1, mat2);
 	
-	for(i=0; i<2;i++)
-	printf("| %f |\n", result[i]);*/
+	for(i=0; i<2;i++){
+		for(j=0; j<2;j++){
+			printf("| %f \t", result[i][j]);
+		}
+	printf("|\n");
+	}
 
 	/*for(i=0; i<NB_TRY; i++) {
-		dynaQReturn = dyna_Q(model, pQueue, Q, X, Y, A, &step_to_converge);
-		delta = dynaQReturn.delta;
+		delta = dyna_Q(model, pQueue, Q, X, Y, A, &step_to_converge);
 		//printf("delta = %5.3f\n\n", delta);
 		if(delta<TETA_Q) break;
 

@@ -73,20 +73,22 @@ int bestActionForTest(int i, int j, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 int e_greedy(int x, int y, float e, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 //Dyna-MG function 
-double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge);
+//double dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge);
 
 //Test function with (X, Y) the starter state
 void test(int X, int Y, int grid[GRID_SIZE][GRID_SIZE], double Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]);
 
 double generateGaussian(int var, int ectype, double d);
 
-double multiplicationMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+double multMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
 void multiplicationMatrixScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
 
-void multiplicationMatrix(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE], int mat1L, int mat1C, int mat2C);
+void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE]);
 
-void multiplicationMatrix2(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE], int mat1L, int mat1C, int mat2C);
+void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]);
+
+void multMatrixColL(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
 void additionMatrix(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
