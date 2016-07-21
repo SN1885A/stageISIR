@@ -7,7 +7,7 @@
 
 //Experimentation definition
 #define NB_STEPS 10	 // 10
-#define NB_EPISODES 10 // 1 000
+#define NB_EPISODES 100 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
@@ -25,10 +25,10 @@
 #define REWARD_VALUE2 6
 
 //Rewards' position
-#define RWX 4
-#define RWY 4
-#define RW2X 4
-#define RW2Y 1
+#define RWX 0
+#define RWY 1
+#define RW2X 0
+#define RW2Y 3
 
 //When you get a reward you get back to...
 #define RX 4
@@ -57,10 +57,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Choose the best action from a given state (i, j)
-int bestAction(int i, int j, double theta[PHI_SIZE]);
+int bestAction(int i, int j, double b[NB_ACTIONS][PHI_SIZE]);
 
 //Select an action with a e-greedy policy
-int e_greedy(int x, int y, float e, double theta[PHI_SIZE]);
+int e_greedy(int x, int y, float e,double b[NB_ACTIONS][PHI_SIZE]);
 
 //Dyna-MG function 
 void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int* step_to_converge);
@@ -97,6 +97,6 @@ void generateVect(double phi[PHI_SIZE], int X, int Y);
 void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]);
 
 //Display the result grid 
-void displayGridDirections(double theta[PHI_SIZE]);
+void displayGridDirections(double b[NB_ACTIONS][PHI_SIZE]);
 
 

@@ -31,8 +31,8 @@ int main() {
 	printf("\nSTART Dyna-Q-MG\n\n");
 	
 	dyna_MG(theta, b, F, &step_to_converge);
-	for(i=0; i<PHI_SIZE; i++) printf("| %f |\n", theta[i]);
-	//displayGridDirections(theta);
+
+	displayGridDirections(b);
 
 	printf("\nEND Dyna-Q-MG\n\n\n");
 

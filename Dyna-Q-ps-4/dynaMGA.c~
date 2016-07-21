@@ -9,14 +9,15 @@
 //Engine
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int bestAction(int i, int j, double theta[PHI_SIZE]){
+int bestAction(int i, int j, double b[NB_ACTIONS][PHI_SIZE]){
 
 	double qm = -1000.0, result;
 	int a, z, action = 0;
 	double phi[PHI_SIZE];
   	for (a=0; a<NB_ACTIONS; a++){
 		generateVect(phi, i, j);
-		result = multVectorOneValue(phi, theta); 
+		result = multVectorOneValue2(b, phi, a); 
+		printf("result = %f\n", result);
     		if (qm<result){
       			qm = result;
       			action = a;
@@ -26,7 +27,7 @@ int bestAction(int i, int j, double theta[PHI_SIZE]){
 return action;
 }
 
-int e_greedy(int x, int y, float e, double theta[PHI_SIZE]){
+int e_greedy(int x, int y, float e,double b[NB_ACTIONS][PHI_SIZE]){
 
 	int a = 0;
 	double r = (double)rand()/RAND_MAX;
@@ -34,7 +35,7 @@ int e_greedy(int x, int y, float e, double theta[PHI_SIZE]){
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
 	if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
-	else a = bestAction(x, y, theta);
+	else a = bestAction(x, y, b);
 	
 return a;
 }
@@ -375,7 +376,7 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 }
 
 
-void displayGridDirections(double theta[PHI_SIZE]){
+void displayGridDirections(double b[NB_ACTIONS][PHI_SIZE]){
 	int i, j, action;
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
@@ -387,7 +388,7 @@ void displayGridDirections(double theta[PHI_SIZE]){
 				printf(" +6  ");
 			}
 			else{
-				action = bestAction(i, j, theta);
+				action = bestAction(i, j, b);
 				switch(action){
 					case NORTH: 
 						printf(" ^   ");	
