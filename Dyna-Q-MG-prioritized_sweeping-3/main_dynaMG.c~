@@ -1,7 +1,17 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include "dynaMGA.h"
+#include "dynaMG.h"
+
+//Playground
+int grid[GRID_SIZE][GRID_SIZE];
+
+//Actual state
+int X = 0;
+int Y = 0;
+
+//Actual action
+int A = 0;
 
 //Nb step to converge
 int step_to_converge = 0;
@@ -9,28 +19,27 @@ int step_to_converge = 0;
 int main() {
 
 	srand(time(NULL));
-
-	int i, j, a;
+	
+	//Grid initialization
+	int i, j;
+	for(i=0; i<GRID_SIZE; i++) 
+		for(j=0; j<GRID_SIZE; j++) 
+			grid[i][j] = 0;
 
 	//All vectors initialization
-	double theta[PHI_SIZE]; 		//Weight
-	double b[4][PHI_SIZE]; 			//Rewards for every action a
-	double F[4][PHI_SIZE][PHI_SIZE];	//Transition matrix for every action a
-	double phi[PHI_SIZE];			//Feature vector
+	double theta[PHI_SIZE]; 	//Weight
+	double b[PHI_SIZE]; 		//Rewards
+	double F[PHI_SIZE][PHI_SIZE];   //Transition matrix
+	double phi[PHI_SIZE];		//Feature vector
 
 	for(i=0; i<PHI_SIZE; i++){ 
 		theta[i] = 0;
+		b[i] = 0;
 		phi[i] = 0;
+		for(j=0; j<PHI_SIZE; j++){
+			F[i][j] = 0;
+		}
 	} 
-	
-	for(a=0; a<4; a++){
-		for(i=0; i<PHI_SIZE; i++){
-			b[a][i] = 0;
-			for(i=0; i<PHI_SIZE; i++){ 
-				F[a][i][j] = 0;
-			}
-		} 
-	}
 
 	printf("\nSTART Dyna-Q-MG\n\n");
 	
