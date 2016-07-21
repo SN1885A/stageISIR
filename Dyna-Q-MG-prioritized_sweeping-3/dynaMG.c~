@@ -228,7 +228,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 				}
 			}
 			//printf("Etat suivant = (%d, %d)\n", Xnext, Ynext);
-			A2 = e_greedy(Xnext, Ynext, EPSILON, theta);
+			A2 = e_greedy(Xnext, Ynext, 0, theta);
 			generateVect(phi2, Xnext, Ynext, A);
 
 			//delta updating
@@ -304,6 +304,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 
 						multMatrixLCarre(tmp, theta, F);		//(theta)T*F
 						tmp2 = multMatrixOneValue(tmp, unitBasisVect);
+						printf("TESTTT = %f\n", tmp2);
 						unitBasisVect[j] = 0; 
 						delta = b[j] + GAMMA*tmp2 - theta[j];
 						

@@ -7,13 +7,13 @@
 
 //Experimentation definition
 #define NB_STEPS 10	 // 10
-#define NB_EPISODES 1000 // 1 000
+#define NB_EPISODES 10 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
 #define GRID_SIZE 5
 
-#define PHI_SIZE 29 //5*5+4
+#define PHI_SIZE 25 //5*5
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -25,10 +25,10 @@
 #define REWARD_VALUE2 6
 
 //Rewards' position
-#define RWX 0
-#define RWY 1
-#define RW2X 0
-#define RW2Y 3
+#define RWX 4
+#define RWY 4
+#define RW2X 4
+#define RW2Y 1
 
 //When you get a reward you get back to...
 #define RX 4
@@ -63,27 +63,31 @@ int bestAction(int i, int j, double theta[PHI_SIZE]);
 int e_greedy(int x, int y, float e, double theta[PHI_SIZE]);
 
 //Dyna-MG function 
-void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], int* step_to_converge);
+void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int* step_to_converge);
 
 double generateGaussian(int var, int ectype, double d);
 
-double multMatrixOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+double multVectorOneValue(double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
+
+double multVectorOneValue2(double mat1[NB_ACTIONS][PHI_SIZE], double mat2[PHI_SIZE], int action);
 
 void multiplicationVectorScalar(double result[PHI_SIZE], double mat[PHI_SIZE], double lambda);
 
-void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE]);
+void multMatrixCarreCol(double result[PHI_SIZE], double mat1[NB_ACTIONS][PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE], int action);
 
-void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]);
+void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int action);
 
 void multMatrixColL(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
 void additionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
+void additionVector2(double mat1[NB_ACTIONS][PHI_SIZE], double mat2[PHI_SIZE], int action);
+
 void soustractionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]);
 
-void additionMatrix(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]);
+void additionMatrix(double mat1[NB_ACTIONS][PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE], int action);
 
-void generateVect(double phi[PHI_SIZE], int X, int Y, int action);
+void generateVect(double phi[PHI_SIZE], int X, int Y);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Display

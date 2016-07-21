@@ -3,9 +3,6 @@
 #include <math.h>
 #include "dynaMG.h"
 
-//Playground
-int grid[GRID_SIZE][GRID_SIZE];
-
 //Actual state
 int X = 0;
 int Y = 0;
@@ -19,23 +16,17 @@ int step_to_converge = 0;
 int main() {
 
 	srand(time(NULL));
-	
-	//Grid initialization
+
 	int i, j;
-	for(i=0; i<GRID_SIZE; i++) 
-		for(j=0; j<GRID_SIZE; j++) 
-			grid[i][j] = 0;
 
 	//All vectors initialization
 	double theta[PHI_SIZE]; 	//Weight
 	double b[PHI_SIZE]; 		//Rewards
 	double F[PHI_SIZE][PHI_SIZE];   //Transition matrix
-	double phi[PHI_SIZE];		//Feature vector
 
 	for(i=0; i<PHI_SIZE; i++){ 
 		theta[i] = 0;
 		b[i] = 0;
-		phi[i] = 0;
 		for(j=0; j<PHI_SIZE; j++){
 			F[i][j] = 0;
 		}

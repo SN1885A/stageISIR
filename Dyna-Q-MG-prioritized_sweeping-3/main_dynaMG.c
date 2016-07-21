@@ -3,13 +3,6 @@
 #include <math.h>
 #include "dynaMG.h"
 
-//Actual state
-int X = 0;
-int Y = 0;
-
-//Actual action
-int A = 0;
-
 //Nb step to converge
 int step_to_converge = 0;
 
@@ -23,12 +16,10 @@ int main() {
 	double theta[PHI_SIZE]; 	//Weight
 	double b[PHI_SIZE]; 		//Rewards
 	double F[PHI_SIZE][PHI_SIZE];   //Transition matrix
-	double phi[PHI_SIZE];		//Feature vector
 
 	for(i=0; i<PHI_SIZE; i++){ 
 		theta[i] = 0;
 		b[i] = 0;
-		phi[i] = 0;
 		for(j=0; j<PHI_SIZE; j++){
 			F[i][j] = 0;
 		}
