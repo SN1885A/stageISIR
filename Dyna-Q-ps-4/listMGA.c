@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "list.h"
+#include "listMGA.h"
 
 PQueue createPQueue(){ return NULL; }
 int emptyP(PQueue P){ return (P == NULL); }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include "dynaMG.h"
+#include "dynaMGA.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,9 +14,9 @@ int bestAction(int i, int j, double theta[PHI_SIZE]){
 	double qm = -1000.0, result;
 	int a, z, action = 0;
 	double phi[PHI_SIZE];
-	
   	for (a=0; a<NB_ACTIONS; a++){
 		generateVect(phi, i, j, a);
+		
 		result = multMatrixOneValue(phi, theta); 
     		if (qm<result){
       			qm = result;
@@ -161,7 +161,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 	
 	//Declarations
 	PQueue pQueue;
-	int i, j, e, a, pas, X, Y, A, Xnext, Ynext;
+	int i, j, e, a, pas, X, Y, A, Xnext, Ynext, A2;
 	float d = 0, diff = 0;
 	double delta, r, priority;
 	double phi1[PHI_SIZE];
@@ -185,8 +185,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 		//Or until I find a reward
 		for (pas=0; pas<NB_STEPS; pas++){
 
-			printf("Etat = (%d, %d)\n", X, Y);
-			printf("Action = %d\n", A);
+			//printf("Etat = (%d, %d)\n", X, Y);
+			//printf("Action = %d\n", A);
 
 			//next real state
 			Xnext = X;
@@ -227,17 +227,18 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 					
 				}
 			}
-			printf("Etat suivant = (%d, %d)\n", Xnext, Ynext);
+			//printf("Etat suivant = (%d, %d)\n", Xnext, Ynext);
+			A2 = e_greedy(Xnext, Ynext, EPSILON, theta);
 			generateVect(phi2, Xnext, Ynext, A);
 
 			//delta updating
 			delta = r + ( GAMMA*multMatrixOneValue(theta, phi2) ) - multMatrixOneValue(theta, phi1);
-			printf("Delta = %f\n", delta);
+			//printf("Delta = %f\n", delta);
 
 			//theta updating
 			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, (ALPHA*delta));
 			additionVector(theta, theta, AlphaDeltaPhi1);
-			printf("Theta has been updated\n");
+			//printf("Theta has been updated\n");
 
 			//F updating
 			double resultTmp[PHI_SIZE];
@@ -249,7 +250,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 			multiplicationVectorScalar(resultTmp3, resultTmp2, ALPHA);	//alpha*(phi'-F*phi)
 			multMatrixColL(resultTmp4, resultTmp3, phi1);			//alpha*(phi'-F*phi)*(phi)T
 			additionMatrix(F, F, resultTmp4);				//F <- F + alpha*(phi'-F*phi)*(phi)T
-			printf("F has been updated\n");
+			//printf("F has been updated\n");
 
 			/*for(i=0; i<PHI_SIZE; i++){
 				for(j=0; j<PHI_SIZE; j++){
@@ -264,27 +265,29 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 			double vectTmp[PHI_SIZE];
 			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
 			additionVector(b, b, vectTmp);					//b <- b + alpha*(r - (b)T*phi)
-			printf("b has been updated\n");
+			//printf("b has been updated\n");
 
 			//Replay
 			int cpt = 0;
 			double unitBasisVect[PHI_SIZE];
 
-			for(i=0; i<PHI_SIZE-4; i++){
-				if(phi1[i] > 0.9){ //ou seuiller
+			for(i=0; i<PHI_SIZE; i++){
+				if(phi1[i] > 0.03){ //ou seuiller
 					priority = abs(delta*phi1[i]);	
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
 					pQueueE.i = i;
 					pQueue = addElement(pQueue, pQueueE);
+					cpt++;
 				}
 				unitBasisVect[i] = 0;
-				cpt++;
-			}
-			printf("Pqueue has been fill at %d\n", cpt);
-
-			while(pQueue != NULL){
 				
+			}
+			//printf("Pqueue has been fill at %d\n", cpt);
+			int p = 0;
+			while(pQueue != NULL){
+				p++;
+				if(p == 20) break;
 				PQueueE head = headP(pQueue);
 				pQueue = deleteHead(pQueue);
 				cpt--;
@@ -294,7 +297,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 				double tmp[PHI_SIZE];
 				double tmp2;
 
-				for(j=0; j<PHI_SIZE-4; j++){
+				for(j=0; j<PHI_SIZE; j++){
 					if(F[indice][j] != 0){
 						//Initialization of the unit basis vetor ej
 						unitBasisVect[j] = 1;
