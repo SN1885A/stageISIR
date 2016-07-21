@@ -76,7 +76,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 			}
 		}
 	}
-	int pqueueSize = 0;
+	
 	for(i=0; i<NB_EPISODES; i++){
 		
 		//Select a random state
@@ -155,17 +155,12 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 				element.action = A;
 				element.priority = p;
 				pQueue = addElement(pQueue, element);
-				pqueueSize++;
 			}		
 			
 			int action, reward;
 			while(pQueue != NULL){
-				//printf("pQueue size 1 = %d\n", pqueueSize);
 				PQueueE pQueueE = headP(pQueue);
 				pQueue = deleteHead(pQueue);
-				pqueueSize--;
-				//printf("pQueue size 2 = %d\n", pqueueSize);
-				//if(pQueue == NULL) printf("pqueue is NULL\n");
 				Sasr sasr2 = findSrWithSa(model.list, pQueueE.state, pQueueE.action); 
 				State s, s2;
 				s.X = sasr2.firstState.X;
@@ -186,8 +181,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 						element2.action = sasr3.action;
 						element2.priority = p;
 						pQueue = addElement(pQueue, element2);
-						pqueueSize++;
-						//printf("pQueue size 3 = %d\n", pqueueSize);
+						
 					}
 				}
 			}

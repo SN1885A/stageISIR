@@ -6,8 +6,8 @@
 #include "listMG.h"
 
 //Experimentation definition
-#define NB_STEPS 10	 // 10
-#define NB_EPISODES 2000 // 1 000
+#define NB_STEPS 1	 // 10
+#define NB_EPISODES 1 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
@@ -17,12 +17,12 @@
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
-#define ECTYPE 80
+#define ECTYPE 10   //30
 #define	VAR 0
 
 //Reward's value
 #define REWARD_VALUE 10
-#define REWARD_VALUE2 3
+#define REWARD_VALUE2 6
 
 //Rewards' position
 #define RWX 0
@@ -44,7 +44,7 @@
 
 //All constants
 #define ALPHA 	0.1
-#define GAMMA 	0.3
+#define GAMMA 	0.9
 
 #define EPSILON 0.5
 
@@ -63,7 +63,7 @@ int bestAction(int i, int j, double theta[PHI_SIZE]);
 int e_greedy(int x, int y, float e, double theta[PHI_SIZE]);
 
 //Dyna-MG function 
-void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, int X, int Y, int A,  int* step_to_converge);
+void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], int* step_to_converge);
 
 double generateGaussian(int var, int ectype, double d);
 

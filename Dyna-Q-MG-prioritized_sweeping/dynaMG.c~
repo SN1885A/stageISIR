@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int bestAction(int i, int j, double theta[PHI_SIZE]){
+
 	double qm = -1000.0, result;
 	int a, z, action = 0;
 	double phi[PHI_SIZE];
@@ -22,7 +23,7 @@ int bestAction(int i, int j, double theta[PHI_SIZE]){
       			action = a;
    		}
 	}
-printf("action = %d\n", action);
+
 return action;
 }
 
@@ -54,10 +55,9 @@ return result;
 
 void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE]){
 
-	int i, j, z;
+	int i, z;
 	for(i=0; i<PHI_SIZE; i++) result[i] = 0;
 	for(i = 0; i<PHI_SIZE; i++)
-		for(j = 0; j<1; j++)
 			for(z = 0; z<PHI_SIZE; z++)
 				result[i] += mat1[i][z]*mat2[z];
 }
@@ -65,14 +65,12 @@ void multMatrixCarreCol(double result[PHI_SIZE], double mat1[PHI_SIZE][PHI_SIZE]
 void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE][PHI_SIZE]){
 	int i, j, z;
 	for(i=0; i<PHI_SIZE; i++) result[i] = 0;
-	for(i = 0; i<1; i++){
-		for(j = 0; j<PHI_SIZE; j++){
-			for(z = 0; z<PHI_SIZE; z++){
-				result[j] += mat1[z]*mat2[z][j];
-				printf("%f\n", result[j]);
-			}
+	for(j = 0; j<PHI_SIZE; j++){
+		for(z = 0; z<PHI_SIZE; z++){
+			result[j] += mat1[z]*mat2[z][j];
 		}
 	}
+	
 }
 
 void multMatrixColL(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
@@ -138,7 +136,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y, int action){
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
 			ind = j*GRID_SIZE+i;
-			distance = sqrt( pow((X-i)*10, 2) + pow((Y-j)*10 , 2) );
+			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 			phi[ind] = generateGaussian(VAR, ECTYPE, distance);
 		}
 	}
@@ -159,16 +157,18 @@ void generateVect(double phi[PHI_SIZE], int X, int Y, int action){
 	}
 }
 
-void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], PQueue pQueue, int X, int Y, int A,  int* step_to_converge){
+void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_SIZE], int* step_to_converge){
 	
 	//Declarations
-	double Qold[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
-	int i, j, e, a, pas;
+	PQueue pQueue;
+	int i, j, e, a, pas, X, Y, A, Xnext, Ynext;
 	float d = 0, diff = 0;
 	double delta, r, priority;
 	double phi1[PHI_SIZE];
 	double phi2[PHI_SIZE];
 	double AlphaDeltaPhi1[PHI_SIZE];
+
+	pQueue = createPQueue();
 
 	for(e=0; e<NB_EPISODES; e++){
 		
@@ -181,14 +181,19 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 		
 		//Generate a feature vector
 		generateVect(phi1, X, Y, A);
-
+		
 		//Or until I find a reward
 		for (pas=0; pas<NB_STEPS; pas++){
 
+			printf("Etat = (%d, %d)\n", X, Y);
+			printf("Action = %d\n", A);
+
 			//next real state
-			int Xnext, Ynext; 
+			Xnext = X;
+			Ynext = Y; 
+
 			//reward
-			int r = 0;
+			r = 0;
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
@@ -222,14 +227,17 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 					
 				}
 			}
+			printf("Etat suivant = (%d, %d)\n", Xnext, Ynext);
 			generateVect(phi2, Xnext, Ynext, A);
 
 			//delta updating
-			delta = r + GAMMA*multMatrixOneValue(theta, phi2)-multMatrixOneValue(theta, phi1);
-		
+			delta = r + ( GAMMA*multMatrixOneValue(theta, phi2) ) - multMatrixOneValue(theta, phi1);
+			printf("Delta = %f\n", delta);
+
 			//theta updating
-			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, ALPHA*delta);
+			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, (ALPHA*delta));
 			additionVector(theta, theta, AlphaDeltaPhi1);
+			printf("Theta has been updated\n");
 
 			//F updating
 			double resultTmp[PHI_SIZE];
@@ -241,42 +249,59 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 			multiplicationVectorScalar(resultTmp3, resultTmp2, ALPHA);	//alpha*(phi'-F*phi)
 			multMatrixColL(resultTmp4, resultTmp3, phi1);			//alpha*(phi'-F*phi)*(phi)T
 			additionMatrix(F, F, resultTmp4);				//F <- F + alpha*(phi'-F*phi)*(phi)T
+			printf("F has been updated\n");
 
+			/*for(i=0; i<PHI_SIZE; i++){
+				for(j=0; j<PHI_SIZE; j++){
+					printf("%f    ", F[i][j]);
+				}
+				printf("\n");
+			}*/
+		
 			//b updating
 			double tmp = multMatrixOneValue(b, phi1); 			//(b)T*phi
 			double lambda = ALPHA*(r-tmp);					//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
 			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
 			additionVector(b, b, vectTmp);					//b <- b + alpha*(r - (b)T*phi)
-		
+			printf("b has been updated\n");
+
 			//Replay
+			int cpt = 0;
 			double unitBasisVect[PHI_SIZE];
-			for(i=0; i<PHI_SIZE; i++){
-				if(phi1[i] != 0){ //ou seuiller
+
+			for(i=0; i<PHI_SIZE-4; i++){
+				if(phi1[i] > 0.9){ //ou seuiller
 					priority = abs(delta*phi1[i]);	
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
 					pQueueE.i = i;
-					addElement(pQueue, pQueueE);
+					pQueue = addElement(pQueue, pQueueE);
 				}
 				unitBasisVect[i] = 0;
+				cpt++;
 			}
+			printf("Pqueue has been fill at %d\n", cpt);
 
 			while(pQueue != NULL){
-
+				
 				PQueueE head = headP(pQueue);
+				pQueue = deleteHead(pQueue);
+				cpt--;
+				//printf("Pqueue actual size is %d\n", cpt);
+				//usleep(50000);
 				int indice = head.i;
 				double tmp[PHI_SIZE];
 				double tmp2;
 
-				for(j=0; j<PHI_SIZE; j++){
+				for(j=0; j<PHI_SIZE-4; j++){
 					if(F[indice][j] != 0){
 						//Initialization of the unit basis vetor ej
 						unitBasisVect[j] = 1;
 
 						multMatrixLCarre(tmp, theta, F);		//(theta)T*F
-						tmp2 = multMatrixOneValue(tmp, unitBasisVect); 
-
+						tmp2 = multMatrixOneValue(tmp, unitBasisVect);
+						unitBasisVect[j] = 0; 
 						delta = b[j] + GAMMA*tmp2 - theta[j];
 						
 						//Updating theta
@@ -286,14 +311,15 @@ void dyna_MG(double theta[PHI_SIZE], double b[PHI_SIZE], double F[PHI_SIZE][PHI_
 						PQueueE pQueueE2;
 						pQueueE2.priority = abs(delta);
 						pQueueE2.i = j;
-						addElement(pQueue, pQueueE2);
+						pQueue = addElement(pQueue, pQueueE2);
+						cpt++;
 					}
 				}
 			}
 			
-			(*step_to_converge)++;
 			int aNext = e_greedy(Xnext, Ynext, EPSILON, theta);
 			X = Xnext; Y = Ynext; A = aNext;
+			generateVect(phi1, X, Y, A);
 
 			(*step_to_converge)++;
 		}
@@ -348,7 +374,6 @@ void displayGridDirections(double theta[PHI_SIZE]){
 			}
 			else{
 				action = bestAction(i, j, theta);
-				printf("action 2 = %d\n", action);
 				switch(action){
 					case NORTH: 
 						printf(" ^   ");	
