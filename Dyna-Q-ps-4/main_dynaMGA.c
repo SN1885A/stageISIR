@@ -32,7 +32,28 @@ int main() {
 	
 	dyna_MG(theta, b, F, &step_to_converge);
 
-	displayGridDirections(b);
+	//Tests operations matrix
+
+	double phi[PHI_SIZE];
+	generateVect(phi, 2, 2);
+
+	/*printf("Theta = \n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", theta[i]);
+	}
+
+	printf("b = \n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", b[3][i]);
+	}*/
+
+	/*printf("Phi=\n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", phi[i]);
+	}*/
+
+	//printf("result = %f\n", result);
+	displayGridDirections(theta, b, F);
 
 	printf("\nEND Dyna-Q-MG\n\n\n");
 

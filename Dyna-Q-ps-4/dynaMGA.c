@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
+#include <limits.h>
 #include "dynaMGA.h"
 
 
@@ -9,64 +11,56 @@
 //Engine
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int bestAction(int i, int j, double b[NB_ACTIONS][PHI_SIZE]){
+int bestAction(double phi[PHI_SIZE], double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 
-	double qm = -1000.0, result;
-	int a, z, action = 0;
-	double phi[PHI_SIZE];
-  	for (a=0; a<NB_ACTIONS; a++){
-		generateVect(phi, i, j);
-		result = multVectorOneValue2(b, phi, a); 
-    		if (qm<result){
-      			qm = result;
-      			action = a;
-   		}
+	double best = -DBL_MAX, result, op1, op2;
+	int a, action = 0;
+	double tmp[PHI_SIZE];
+	
+	for(a=0; a<NB_ACTIONS; a++){
+		op1 = multVectorOneValue2(b, phi, a);
+		multMatrixCarreCol(tmp, F, phi, a);
+		op2 = GAMMA*multVectorOneValue(theta, tmp);
+		result = op1 + op2;
+		if(result>best){
+			best = result;
+			action = a;
+		}	
 	}
 
 return action;
 }
 
-int e_greedy(int x, int y, float e,double b[NB_ACTIONS][PHI_SIZE]){
+int e_greedy(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 
 	int a = 0;
 	double r = (double)rand()/RAND_MAX;
 	//e-greegy:
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
-	if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
-	else a = bestAction(x, y, b);
+	//if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
+	if( (x==RWX && y==RWY) || (r < e) ) a = rand()%NB_ACTIONS;
+	else a = bestAction(phi,theta, b, F);
 	
 return a;
 }
 
-double generateGaussian(int var, int ectype, double d){
-	
-	double fact1 = 1/(sqrt( (M_PI*2)*ectype));
-	double div1, div2;
-	div1 = -( pow( (d-VAR), 2) );
-	div2 = 2*pow(ectype, 2);
-	double fact2 = div1/div2;
-	double fact3 = exp(fact2);
-	double result = fact1*fact3;
-
-return result;
-}
-
 void multMatrixCarreCol(double result[PHI_SIZE], double mat1[NB_ACTIONS][PHI_SIZE][PHI_SIZE], double mat2[PHI_SIZE], int action){
 
-	int i, z;
-	for(i=0; i<PHI_SIZE; i++) result[i] = 0;
+	int i, j;
+	for(i = 0; i<PHI_SIZE; i++) result[i] = 0;
 	for(i = 0; i<PHI_SIZE; i++)
-			for(z = 0; z<PHI_SIZE; z++)
-				result[i] += mat1[action][i][z]*mat2[z];
+			for(j = 0; j<PHI_SIZE; j++)
+				result[i] += mat1[action][i][j]*mat2[j];
 }
 
 void multMatrixLCarre(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int action){
+
 	int i, j, z;
-	for(i=0; i<PHI_SIZE; i++) result[i] = 0;
-	for(j = 0; j<PHI_SIZE; j++){
-		for(z = 0; z<PHI_SIZE; z++){
-			result[j] += mat1[z]*mat2[action][z][j];
+	for(i = 0; i<PHI_SIZE; i++) result[i] = 0;
+	for(i = 0; i<PHI_SIZE; i++){
+		for(j = 0; j<PHI_SIZE; j++){
+			result[i] += mat1[j]*mat2[action][j][i];
 		}
 	}
 	
@@ -76,7 +70,6 @@ void multMatrixColL(double result[PHI_SIZE][PHI_SIZE], double mat1[PHI_SIZE], do
 	int i, j;
 	for(i = 0; i<PHI_SIZE; i++){
 		for(j = 0; j<PHI_SIZE; j++){
-			result[i][j] = 0;
 			result[i][j] = mat1[i]*mat2[j];
 		}
 	}
@@ -115,8 +108,9 @@ void multiplicationVectorScalar(double result[PHI_SIZE], double mat[PHI_SIZE], d
 void additionVector(double result[PHI_SIZE], double mat1[PHI_SIZE], double mat2[PHI_SIZE]){
 
 	int i;
+	double result2[PHI_SIZE];
 	for(i = 0; i<PHI_SIZE; i++){
-		result[i] = mat1[i]+mat2[i];
+		mat1[i] += mat2[i];
 	}
 }
 
@@ -124,7 +118,7 @@ void additionVector2(double mat1[NB_ACTIONS][PHI_SIZE], double mat2[PHI_SIZE], i
 
 	int i;
 	for(i = 0; i<PHI_SIZE; i++){
-		mat1[action][i] = mat1[action][i]+mat2[i];
+		mat1[action][i] += mat2[i];
 	}
 }
 
@@ -141,9 +135,22 @@ void additionMatrix(double mat1[NB_ACTIONS][PHI_SIZE][PHI_SIZE], double mat2[PHI
 	int i, j;
 	for(i = 0; i<PHI_SIZE; i++){
 		for(j = 0; j<PHI_SIZE; j++){
-			mat1[action][i][j]= mat1[action][i][j]+mat2[i][j];
+			mat1[action][i][j]  += mat2[i][j];
 		}
 	}
+}
+
+double generateGaussian(int var, int ectype, double d){
+	
+	double fact1 = 1/(sqrt( (M_PI*2)*ectype));
+	double div1, div2;
+	div1 = -( pow( (d-VAR), 2) );
+	div2 = 2*pow(ectype, 2);
+	double fact2 = div1/div2;
+	double fact3 = exp(fact2);
+	double result = fact1*fact3;
+
+return result;
 }
 
 void generateVect(double phi[PHI_SIZE], int X, int Y){
@@ -153,7 +160,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			ind = j*GRID_SIZE+i;
+			ind = i*GRID_SIZE+j;
 			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 			phi[ind] = generateGaussian(VAR, ECTYPE, distance);
 		}
@@ -164,7 +171,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	
 	//Declarations
 	PQueue pQueue;
-	int i, j, e, a, pas, X, Y, A, Xnext, Ynext, A2, Anext;
+	int i, j, e, a, pas;
+	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0, diff = 0;
 	double delta, r, priority;
 	double phi1[PHI_SIZE];
@@ -182,43 +190,31 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		//Generate a feature vector
 		generateVect(phi1, X, Y);
 
-		//Select an action 
-		double best = -1000;
-		double result;
-		double tmp[PHI_SIZE];
-		double op1, op2;
-
-		//Or until I find a reward
-		for (pas=0; pas<NB_STEPS; pas++){
+		//while( ((X!=RWX) && (Y!=RWY)) || ((X!=RW2X) && (Y!=RW2Y)) ){
+		while( (X!=RWX) && (Y!=RWY) ){
 
 			//next real state
 			Xnext = X;
 			Ynext = Y; 
-
-			for(a=0; a<NB_ACTIONS; a++){
-				op1 = multVectorOneValue2(b, phi1, a);
-				multMatrixCarreCol(tmp, F, phi1, a);
-				op2 = GAMMA*multVectorOneValue(theta, tmp);
-				result = op1 + op2;
-				if(result>best){
-					best = result;
-					A = a;
-				}	
-			}
-
+			
+			//Select an action
+			A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
+			
 			//reward
 			r = 0;
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
-				Xnext = RX; 
-				Ynext = RY;
+				//Xnext = RX; 
+				//Ynext = RY;
+				Xnext = rand()%GRID_SIZE; 
+				Ynext = rand()%GRID_SIZE;
 			}
- 			else if ((X==RW2X) && (Y==RW2Y)) {
+ 			/*else if ((X==RW2X) && (Y==RW2Y)) {
 				r = REWARD_VALUE2;
 				Xnext = R2X; 
 				Ynext = R2Y;
-			}
+			}*/
 			else {
 				switch (A) {
 					case NORTH: 
@@ -245,7 +241,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			generateVect(phi2, Xnext, Ynext);
 
 			//delta updating
-			delta = r + ( GAMMA*multVectorOneValue(theta, phi2) ) - multVectorOneValue(theta, phi1);
+			delta = r + GAMMA*multVectorOneValue(theta, phi2)  - multVectorOneValue(theta, phi1);
+			//printf("Delta = %f\n", delta);
 
 			//theta updating
 			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, (ALPHA*delta));
@@ -267,7 +264,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			double tmp = multVectorOneValue2(b, phi1, A); 			//(b)T*phi
 			double lambda = ALPHA*(r-tmp);					//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
-
 			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
 			additionVector2(b, vectTmp, A);					//b <- b + alpha*(r - (b)T*phi)
 
@@ -276,7 +272,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			double unitBasisVect[PHI_SIZE];
 
 			for(i=0; i<PHI_SIZE; i++){
-				if(phi1[i] > 0.03){ //ou seuiller
+				if(phi1[i] != 0){ //ou seuiller
 					priority = abs(delta*phi1[i]);	
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
@@ -287,11 +283,12 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				unitBasisVect[i] = 0;
 				
 			}
-			//printf("Pqueue has been fill at %d\n", cpt);
+			
 			int p = 0;
 			while(pQueue != NULL){
+
 				p++;
-				if(p == 20) break;
+				if(p == NB_STEPS) break;
 
 				PQueueE head = headP(pQueue);
 				pQueue = deleteHead(pQueue);
@@ -304,19 +301,21 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					for(j=0; j<PHI_SIZE; j++){
 						if(F[a][indice][j] != 0){
 							int m;
-							double best2 = -1000;
+							double best = -DBL_MAX;
+							double result;
 							for(m=0; m<NB_ACTIONS; m++){
 								//Initialization of the unit basis vetor ej
 								unitBasisVect[j] = 1;
 								multMatrixLCarre(resultTmp5, theta, F, m);
 								tmp2 = multVectorOneValue(resultTmp5, unitBasisVect);
+								
 								unitBasisVect[j] = 0; 
-								result = b[m][j] + GAMMA*tmp2 - theta[j];
-
-								if(result>best) best2 = result;
+								result = (b[m][j] + GAMMA*tmp2) - theta[j];
+			
+								if(result>best) best = result;
 							}
-
-							delta = best2;
+							
+							delta = best;
 						
 							//Updating theta
 							theta[j] += ALPHA*delta;
@@ -339,6 +338,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		}
 			
 	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -375,19 +375,21 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 }
 
 
-void displayGridDirections(double b[NB_ACTIONS][PHI_SIZE]){
+void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 	int i, j, action;
+	double phi[PHI_SIZE];
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
 
 			if( i == RWX && j == RWY  ){
-				printf(" +10 ");
+				printf(" +%d ",  REWARD_VALUE);
 			}
-			else if(i == RW2X && j == RW2Y){
-				printf(" +6  ");
-			}
+			/*else if(i == RW2X && j == RW2Y){
+				printf(" +%d  ",  REWARD_VALUE2);
+			}*/
 			else{
-				action = bestAction(i, j, b);
+				generateVect(phi, i, j);
+				action = bestAction(phi, theta, b, F);
 				switch(action){
 					case NORTH: 
 						printf(" ^   ");	
@@ -406,5 +408,5 @@ void displayGridDirections(double b[NB_ACTIONS][PHI_SIZE]){
 		}
 		printf("\n");
 	}
-	printf("\n\n");
+	printf("\n");
 } 

@@ -32,26 +32,28 @@ int main() {
 	
 	dyna_MG(theta, b, F, &step_to_converge);
 
-	/*int z;
-	double phitest1[PHI_SIZE];	
-	double phitest2[PHI_SIZE];
+	//Tests operations matrix
 
-	generateVect(phitest1, 0, 0);
-	generateVect(phitest2, 4, 4);
+	double phi[PHI_SIZE];
+	generateVect(phi, 2, 2);
 
-	double result1, result2;
-	result1 = multMatrixOneValue(phitest1, theta);
-	result2 = multMatrixOneValue(phitest2, theta);
+	/*printf("Theta = \n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", theta[i]);
+	}
 
-	for(z = 0; z<PHI_SIZE; z++) printf("| %f |  | %f |\n", phitest[z], phitest2[z]);
-	printf("result1 = %d - result2 = %d\n", result1, result2);
-	
-	//int action1, action2;
-	//printf("action1 = %d - action2 = %d\n", action1, action2);
+	printf("b = \n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", b[3][i]);
+	}*/
 
-	//for(i=0; i<PHI_SIZE; i++) printf("| %f |\n", theta[i]);*/
+	/*printf("Phi=\n");
+	for(i=0; i<PHI_SIZE; i++){
+		printf("\t %f \n", phi[i]);
+	}*/
 
-	displayGridDirections(b);
+	//printf("result = %f\n", result);
+	//displayGridDirections(theta, b, F);
 
 	printf("\nEND Dyna-Q-MG\n\n\n");
 
