@@ -160,7 +160,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			ind = j*GRID_SIZE+i;
+			ind = i*GRID_SIZE+j;
 			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 			phi[ind] = generateGaussian(VAR, ECTYPE, distance);
 		}
@@ -205,10 +205,10 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
-				//Xnext = RX; 
-				//Ynext = RY;
-				Xnext = rand()%GRID_SIZE; 
-				Ynext = rand()%GRID_SIZE;
+				Xnext = RX; 
+				Ynext = RY;
+				//Xnext = rand()%GRID_SIZE; 
+				//Ynext = rand()%GRID_SIZE;
 			}
  			/*else if ((X==RW2X) && (Y==RW2Y)) {
 				r = REWARD_VALUE2;
@@ -346,7 +346,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
-	int i, j;
+	/*int i, j;
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
 			
@@ -371,7 +371,7 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 		}
 		printf("\n");
 	}
-	printf("\n\n");
+	printf("\n\n");*/
 }
 
 

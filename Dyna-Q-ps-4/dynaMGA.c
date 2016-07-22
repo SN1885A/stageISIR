@@ -205,10 +205,10 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
-				//Xnext = RX; 
-				//Ynext = RY;
-				Xnext = rand()%GRID_SIZE; 
-				Ynext = rand()%GRID_SIZE;
+				Xnext = RX; 
+				Ynext = RY;
+				//Xnext = rand()%GRID_SIZE; 
+				//Ynext = rand()%GRID_SIZE;
 			}
  			/*else if ((X==RW2X) && (Y==RW2Y)) {
 				r = REWARD_VALUE2;
@@ -344,36 +344,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DISPLAY
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
-	int i, j;
-	for(i=0; i<GRID_SIZE; i++){
-		for(j=0; j<GRID_SIZE; j++){
-			
-			if( (i == RWX && j == RWY) || ( (i == stateX && j == stateY) && (i == RWX && j == RWY) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" +10 ");
-			}
-			else if( (i == RW2X && j == RW2Y) || ( (i == stateX && j == stateY) && (i == RW2X && j == RW2Y) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" +6  ");
-			}
-			else if( (i == RX && j == RY) || ( (i == stateX && j == stateY) && (i == RX && j == RY) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" R1  ");
-			}
-			else if( (i == R2X && j == R2Y) || ( (i == stateX && j == stateY) && (i == R2X && j == R2Y) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" R2  ");
-			}
-			else if(i == stateX && j == stateY) printf(" X   ");
-			else printf(" .   ");
-		}
-		printf("\n");
-	}
-	printf("\n\n");
-}
-
 
 void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 	int i, j, action;
