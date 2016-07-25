@@ -34,8 +34,8 @@ int main() {
 
 	//Tests operations matrix
 
-	double phi[PHI_SIZE];
-	generateVect(phi, 2, 2);
+	//double phi[PHI_SIZE];
+	//generateVect(phi, 2, 2);
 
 	/*printf("Theta = \n");
 	for(i=0; i<PHI_SIZE; i++){

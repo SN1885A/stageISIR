@@ -16,8 +16,8 @@
 #define PHI_SIZE 25 //5*5
 
 //Gaussian parameters
-#define DISTANCE 30 //10 cm la case
-#define ECTYPE 10   //30
+#define DISTANCE 10 //10 cm la case
+#define ECTYPE 30   //30
 #define	VAR 0
 
 //Reward's value
@@ -25,9 +25,9 @@
 //#define REWARD_VALUE2 1
 
 //Rewards' position
-//Milieu (2, 2), en haut à gauche (0, 0), en bas à droite (4, 4), desaxé: (1,3)
-#define RWX 0 // milieu: 2 en haut à gauche 0
-#define RWY 0 // milieu: 2
+//Milieu (2, 2), en haut à gauche (0, 0), en bas à droite (4, 4), desaxé: (1,3)/(2, 3)
+#define RWX 2 // milieu: 2 en haut à gauche 0
+#define RWY 1 // milieu: 2
 //#define RW2X 0
 //#define RW2Y 3
 

@@ -189,10 +189,11 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		
 		//Generate a feature vector
 		generateVect(phi1, X, Y);
-
+		//printf("Itération\n");
 		//while( ((X!=RWX) && (Y!=RWY)) || ((X!=RW2X) && (Y!=RW2Y)) ){
-		while( (X!=RWX) && (Y!=RWY) ){
-
+		//do{
+		int it;
+		for(it = 0; it<30; it++){	
 			//next real state
 			Xnext = X;
 			Ynext = Y; 
@@ -205,6 +206,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
+				//printf("REWARDD!!!!!!!\n");
 				Xnext = RX; 
 				Ynext = RY;
 				//Xnext = rand()%GRID_SIZE; 
@@ -242,6 +244,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			//delta updating
 			delta = r + GAMMA*multVectorOneValue(theta, phi2)  - multVectorOneValue(theta, phi1);
+			//printf("%f   %f\n", GAMMA*multVectorOneValue(theta, phi2), multVectorOneValue(theta, phi1));
 			//printf("Delta = %f\n", delta);
 
 			//theta updating
@@ -268,7 +271,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			additionVector2(b, vectTmp, A);					//b <- b + alpha*(r - (b)T*phi)
 
 			//Replay
-			int cpt = 0;
 			double unitBasisVect[PHI_SIZE];
 
 			for(i=0; i<PHI_SIZE; i++){
@@ -278,7 +280,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					pQueueE.priority = priority;
 					pQueueE.i = i;
 					pQueue = addElement(pQueue, pQueueE);
-					cpt++;
 				}
 				unitBasisVect[i] = 0;
 				
@@ -292,7 +293,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 				PQueueE head = headP(pQueue);
 				pQueue = deleteHead(pQueue);
-				cpt--;
 				
 				int indice = head.i;
 				double resultTmp5[PHI_SIZE];
@@ -325,18 +325,20 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 							pQueueE2.priority = abs(delta);
 							pQueueE2.i = j;
 							pQueue = addElement(pQueue, pQueueE2);
-							cpt++;
+							
 						}
 					}
 				}
 			}
 
 			X = Xnext; Y = Ynext;
+			//printf("(%d, %d)\n", X, Y);	
 			generateVect(phi1, X, Y);
 
 			(*step_to_converge)++;
 		}
-			
+		//while( (X!=RWX) || (Y!=RWY) );
+		
 	}
 
 }
