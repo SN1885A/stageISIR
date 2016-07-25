@@ -7,7 +7,7 @@
 
 //Experimentation definition
 #define NB_STEPS 10	 // 10
-#define NB_EPISODES 1000 // 1 000
+#define NB_EPISODES 20000 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
@@ -46,7 +46,7 @@
 //All constants
 #define ALPHA 	0.4
 #define GAMMA 	0.5
-
+#define THETA_CONV 0.04
 #define EPSILON 0.5
 
 
