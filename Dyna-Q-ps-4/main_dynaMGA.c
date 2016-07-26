@@ -32,8 +32,6 @@ int main() {
 	
 	dyna_MG(theta, b, F, &step_to_converge);
 
-	//Tests operations matrix
-
 	//double phi[PHI_SIZE];
 	//generateVect(phi, 2, 2);
 
@@ -52,9 +50,8 @@ int main() {
 	//	printf("\t %f \n", phi[i]);
 	//}
 
-	//printf("result = %f\n", result);
 	displayGridDirections(theta, b, F);
-
+	printf("Vitesse de convergence en épisode : %d\n", step_to_converge);
 	printf("\nEND Dyna-Q-MG\n\n\n");
 
 return 0;

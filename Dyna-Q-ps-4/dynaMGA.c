@@ -362,7 +362,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			X = Xnext; Y = Ynext;
 			generateVect(phi1, X, Y);
 
-			(*step_to_converge)++;
+			
 		}
 		//while(cpt != 2);
 		
@@ -372,11 +372,12 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			if (diffMax < diff) diffMax = diff;
 			
 		}
+
+		(*step_to_converge)++;
 		fprintf(file, "%f\n", R);
 		printf("episode %d\n", e);
 		//printf("diffmax %f\n", diffMax);
 		if(diffMax < THETA_CONV){
-			printf("break : %d\n", episode_cpt);
 			break;
 		}
 	}
@@ -388,7 +389,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
-	int i, j, action;
+	int i, j, action, wrong = 0;
 	double phi[PHI_SIZE];
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
@@ -402,6 +403,46 @@ void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE
 			else{
 				generateVect(phi, i, j);
 				action = bestAction(phi, theta, b, F);
+
+				//Policy verif
+				if(i == RWX && j != RWY){
+					if(j < RWY){
+						if(action != EAST) wrong++;
+					}
+					else if(j > RWY){
+						if(action != WEST) wrong++;
+					}	
+				}
+
+				else if(j == RWY && i != RWX){
+					if(i < RWX){
+						if(action != SOUTH) wrong++;
+					}
+					else if(i > RWX){
+						if(action != NORTH) wrong++;
+					}	
+				}
+
+				else if(i != RWX && j != RWY){
+					if(i<RWX){
+						if(j<RWY){
+							if(action != SOUTH && action != EAST) wrong++;
+						}
+						else{
+							if(action != SOUTH && action != WEST) wrong++;
+						}
+					}
+					else{
+						if(j<RWY){
+							if(action != NORTH && action != EAST) wrong++;
+						}
+						else{
+							if(action != NORTH && action != WEST) wrong++;
+						}
+					}
+
+				} 
+
 				switch(action){
 					case NORTH: 
 						printf(" ^   ");	
@@ -421,4 +462,5 @@ void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE
 		printf("\n");
 	}
 	printf("\n");
+	printf("Policy error percent = %d\n", wrong);
 } 
