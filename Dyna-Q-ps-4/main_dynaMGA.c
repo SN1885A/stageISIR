@@ -37,20 +37,20 @@ int main() {
 	//double phi[PHI_SIZE];
 	//generateVect(phi, 2, 2);
 
-	printf("Theta = \n");
-	for(i=0; i<PHI_SIZE; i++){
-		printf("\t %f \n", theta[i]);
-	}
+	//printf("Theta = \n");
+	//for(i=0; i<PHI_SIZE; i++){
+	//	printf("\t %f \n", theta[i]);
+	//}
 
 	//printf("b = \n");
 	//for(i=0; i<PHI_SIZE; i++){
 	//	printf("\t %f \n", b[3][i]);
 	//}
 
-	/*printf("Phi=\n");
-	for(i=0; i<PHI_SIZE; i++){
-		printf("\t %f \n", phi[i]);
-	}*/
+	//printf("Phi=\n");
+	//for(i=0; i<PHI_SIZE; i++){
+	//	printf("\t %f \n", phi[i]);
+	//}
 
 	//printf("result = %f\n", result);
 	displayGridDirections(theta, b, F);

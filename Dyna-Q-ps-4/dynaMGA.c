@@ -158,19 +158,17 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	int ind = 0, i, j;
 	double distance;
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
-	//for(i = 0; i<4; i++){
-		//for(j = Y-3; Y+3; j++){
-			//ind = i*GRID_SIZE+j;
-			//if( (ind+i) < PHI_SIZE){
-				//distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
-				//phi[ind] = generateGaussian(VAR, ECTYPE, distance);
-			//ind = X*GRID_SIZE+Y;
-			//phi[ind] = 1;
-		//}
-	//}
+	for(i = 0; i<GRID_SIZE; i++){
+		for(j = 0; j<GRID_SIZE; j++){
+			if( (X+i<2 && Y+j<2) || (abs(X-i)<2 && abs(Y-j)<2)){
+				ind = i*GRID_SIZE+j;
+				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
+				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
+			}
+		}
+	}
 	ind = X*GRID_SIZE+Y;
 	phi[ind] = 1;
-	
 }
 
 void normalize(double phi[PHI_SIZE]){
@@ -223,8 +221,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		
 		int it;
 		R = 0;
-		do{
-		//for(it = 0; it<30; it++){
+		//do{
+		for(it = 0; it<30; it++){
 			if(cpt == 1) cpt++;
 	
 			//next real state
@@ -366,8 +364,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			(*step_to_converge)++;
 		}
-		//while( ((X!=RWX) || (Y!=RWY)) );
-		while(cpt != 2);
+		//while(cpt != 2);
 		
 		double diff, diffMax = 0;
 		for(i=0; i<PHI_SIZE; i++){
