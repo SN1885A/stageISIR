@@ -53,7 +53,7 @@ int main() {
 	}*/
 
 	//printf("result = %f\n", result);
-	//displayGridDirections(theta, b, F);
+	displayGridDirections(theta, b, F);
 
 	printf("\nEND Dyna-Q-MG\n\n\n");
 

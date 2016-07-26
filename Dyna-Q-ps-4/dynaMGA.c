@@ -158,12 +158,31 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	int ind = 0, i, j;
 	double distance;
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
-	for(i = 0; i<GRID_SIZE; i++){
-		for(j = 0; j<GRID_SIZE; j++){
-			ind = i*GRID_SIZE+j;
-			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
-			phi[ind] = generateGaussian(VAR, ECTYPE, distance);
-		}
+	//for(i = 0; i<4; i++){
+		//for(j = Y-3; Y+3; j++){
+			//ind = i*GRID_SIZE+j;
+			//if( (ind+i) < PHI_SIZE){
+				//distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
+				//phi[ind] = generateGaussian(VAR, ECTYPE, distance);
+			//ind = X*GRID_SIZE+Y;
+			//phi[ind] = 1;
+		//}
+	//}
+	ind = X*GRID_SIZE+Y;
+	phi[ind] = 1;
+	
+}
+
+void normalize(double phi[PHI_SIZE]){
+
+	int i;
+	double max = -DBL_MAX;
+	for(i = 0; i<PHI_SIZE; i++){
+		if(fabs(phi[i])>max)
+			max = fabs(phi[i]);
+	}
+	for(i = 0; i<PHI_SIZE; i++){
+		phi[i]/=max;
 	}
 }
 
@@ -183,7 +202,11 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	double oldTheta[PHI_SIZE];
 
 	FILE *file = NULL;
-	file = fopen("test.txt" ,"w+");
+	file = fopen("reward.txt" ,"w+");
+
+	FILE *file2 = NULL;
+	file2 = fopen("delta.txt" ,"w+");
+
 	for(e=0; e<NB_EPISODES; e++){
 		
 		cpt = 0;
@@ -202,7 +225,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		R = 0;
 		do{
 		//for(it = 0; it<30; it++){
-			if(cpt == 1) cpt++;	
+			if(cpt == 1) cpt++;
+	
 			//next real state
 			Xnext = X;
 			Ynext = Y; 
@@ -215,12 +239,9 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			if ((X==RWX) && (Y==RWY)) {  
 				r = REWARD_VALUE;
-				//printf("REWARDD!!!!!!!\n");
 				Xnext = RX; 
 				Ynext = RY;
 				cpt++;
-				//Xnext = rand()%GRID_SIZE; 
-				//Ynext = rand()%GRID_SIZE;
 			}
  			/*else if ((X==RW2X) && (Y==RW2Y)) {
 				r = REWARD_VALUE2;
@@ -231,19 +252,19 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = -1;
+						if(X==0)  r = -0.1;
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = -1;
+						if(Y==GRID_SIZE-1)r = -0.1;
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
-						if(X==GRID_SIZE-1) r = -1;
+						if(X==GRID_SIZE-1) r = -0.1;
 						else Xnext = X + 1;
 					break;
 					case WEST: 
-						if(Y==0) r = -1; 
+						if(Y==0) r = -0.1;
 						else Ynext = Y - 1;
 					break;
 					
@@ -325,10 +346,10 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 							}
 							
 							delta = best;
-						
+							
 							//Updating theta
 							theta[j] += ALPHA*delta;
-						
+							
 							//Put j on the PQueue with priority |delta|
 							PQueueE pQueueE2;
 							pQueueE2.priority = abs(delta);
@@ -339,7 +360,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					}
 				}
 			}
-
+			
 			X = Xnext; Y = Ynext;
 			generateVect(phi1, X, Y);
 
@@ -347,16 +368,16 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		}
 		//while( ((X!=RWX) || (Y!=RWY)) );
 		while(cpt != 2);
-
+		
 		double diff, diffMax = 0;
 		for(i=0; i<PHI_SIZE; i++){
 			diff = fabsf(oldTheta[i] - theta[i]);
 			if (diffMax < diff) diffMax = diff;
 			
 		}
-		fprintf(file, "%f\n", diffMax);
-		//if( episode_cpt%1000 == 0) 
-		printf("diffMa = %f\t nb_episode = %d\n", diffMax, episode_cpt);
+		fprintf(file, "%f\n", R);
+		printf("episode %d\n", e);
+		//printf("diffmax %f\n", diffMax);
 		if(diffMax < THETA_CONV){
 			printf("break : %d\n", episode_cpt);
 			break;
@@ -376,7 +397,7 @@ void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE
 		for(j=0; j<GRID_SIZE; j++){
 
 			if( i == RWX && j == RWY  ){
-				printf(" +%d ",  REWARD_VALUE);
+				printf(" +%0.1f",  REWARD_VALUE);
 			}
 			/*else if(i == RW2X && j == RW2Y){
 				printf(" +%d  ",  REWARD_VALUE2);

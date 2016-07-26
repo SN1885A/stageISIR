@@ -37,15 +37,15 @@ int main() {
 	//double phi[PHI_SIZE];
 	//generateVect(phi, 2, 2);
 
-	/*printf("Theta = \n");
+	printf("Theta = \n");
 	for(i=0; i<PHI_SIZE; i++){
 		printf("\t %f \n", theta[i]);
 	}
 
-	printf("b = \n");
-	for(i=0; i<PHI_SIZE; i++){
-		printf("\t %f \n", b[3][i]);
-	}*/
+	//printf("b = \n");
+	//for(i=0; i<PHI_SIZE; i++){
+	//	printf("\t %f \n", b[3][i]);
+	//}
 
 	/*printf("Phi=\n");
 	for(i=0; i<PHI_SIZE; i++){
