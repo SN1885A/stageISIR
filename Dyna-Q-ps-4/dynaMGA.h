@@ -7,7 +7,7 @@
 
 //Experimentation definition
 #define NB_STEPS 10	 // 10
-#define NB_EPISODES 1000 // 1 000
+#define NB_EPISODES 30 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
