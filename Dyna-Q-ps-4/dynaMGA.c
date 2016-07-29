@@ -6,6 +6,10 @@
 #include <limits.h>
 #include "dynaMGA.h"
 
+#define REPLAY 1 
+//#define FOR 1
+#define WHILE 1
+//#define DEBUG 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
@@ -160,7 +164,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			if( (X+i<3 && Y+j<3) || (abs(X-i)<3 && abs(Y-j)<3)){
+			if( (X+i<2 && Y+j<2) || (abs(X-i)<2 && abs(Y-j)<2)){
 				ind = i*GRID_SIZE+j;
 				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
@@ -184,13 +188,13 @@ void normalize(double phi[PHI_SIZE]){
 	}
 }
 
-void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int *step_to_converge){
+void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int *episode_to_converge, int* step_to_converge){
 	
 	//Declarations
 	PQueue pQueue;
-	int i, j, e, a, pas, cpt, episode_cpt = 0;
+	int i, j, e, a, pas, cpt;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
-	float d = 0, diff = 0;
+	float d = 0;
 	double delta, r, priority, R = 0;
 	double phi1[PHI_SIZE];
 	double phi2[PHI_SIZE];
@@ -199,16 +203,19 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	pQueue = createPQueue();
 	double oldTheta[PHI_SIZE];
 
-	FILE *file = NULL;
-	file = fopen("reward.txt" ,"w+");
+	#ifdef DEBUG
+	FILE *fileReward = NULL;
+	fileReward = fopen("rewardReplay.txt" ,"w+");
 
-	FILE *file2 = NULL;
-	file2 = fopen("delta.txt" ,"w+");
+	FILE *fileTimeReward = NULL;
+	fileTimeReward = fopen("rewardTime.txt" ,"w+");
+
+	struct timeval start, end;
+	#endif
 
 	for(e=0; e<NB_EPISODES; e++){
 		
 		cpt = 0;
-		episode_cpt++;
 
 		for(i=0; i<PHI_SIZE; i++)  oldTheta[i] = theta[i];
 
@@ -219,10 +226,22 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		//Generate a feature vector
 		generateVect(phi1, X, Y);
 		
-		int it;
 		R = 0;
-		//do{
+		
+		#ifdef DEBUG
+		gettimeofday(&start, NULL);
+		#endif
+		
+		#ifdef WHILE
+		do{
+		#endif
+
+		(*step_to_converge)++;
+
+		#ifdef FOR
+		int it;
 		for(it = 0; it<30; it++){
+		#endif
 			if(cpt == 1) cpt++;
 	
 			//next real state
@@ -241,12 +260,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				Ynext = RY;
 				cpt++;
 			}
- 			/*else if ((X==RW2X) && (Y==RW2Y)) {
-				r = REWARD_VALUE2;
-				Xnext = R2X; 
-				Ynext = R2Y;
-			}*/
-			else {
+
+			else{
 				switch (A) {
 					case NORTH: 
 						//We cannot move
@@ -298,11 +313,11 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
 			additionVector2(b, vectTmp, A);					//b <- b + alpha*(r - (b)T*phi)
 
-			//Replay
+			#ifdef REPLAY
 			double unitBasisVect[PHI_SIZE];
 
 			for(i=0; i<PHI_SIZE; i++){
-				if(phi1[i] != 0){ //ou seuiller
+				if(phi1[i] != 0){ //or threshold
 					priority = abs(delta*phi1[i]);	
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
@@ -310,10 +325,9 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					pQueue = addElement(pQueue, pQueueE);
 				}
 				unitBasisVect[i] = 0;
-				
 			}
 			
-			/*int p = 0;
+			int p = 0;
 			while(pQueue != NULL){
 
 				p++;
@@ -357,36 +371,108 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 						}
 					}
 				}
-			}*/
+			}
+			#endif
 			
 			X = Xnext; Y = Ynext;
 			generateVect(phi1, X, Y);
-
+			
 			
 		}
-		//while(cpt != 2);
-		
+		#ifdef WHILE
+		while(cpt != 2);
+		#endif
+
 		double diff, diffMax = 0;
 		for(i=0; i<PHI_SIZE; i++){
 			diff = fabsf(oldTheta[i] - theta[i]);
 			if (diffMax < diff) diffMax = diff;
-			
 		}
 
-		(*step_to_converge)++;
-		fprintf(file, "%f\n", R);
-		printf("episode %d\n", e);
+		(*episode_to_converge) = e;
 		
-		if(diffMax < THETA_CONV){
+		printf("Episode n°%d\n", e);
+		
+		int verif = verifPolicy(theta, b, F);
+		if(verif == 0){
 			break;
 		}
+		/*if(diffMax < THETA_CONV){
+			printf("diffMAx = %f\n", diffMax);
+			break;
+		}*/
+		
+		#ifdef DEBUG
+		fprintf(fileReward, "%f\n", R);
+		#ifdef WHILE
+		gettimeofday(&end, NULL);
+		fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
+		#endif
+		#endif
 	}
 
+}
+
+int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
+
+	int i, j, action, wrong = 0;
+	double phi[PHI_SIZE];
+
+	for(i=0; i<GRID_SIZE; i++){
+		for(j=0; j<GRID_SIZE; j++){
+			if( !(i == RWX && j == RWY)  ){
+
+				generateVect(phi, i, j);
+				action = bestAction(phi, theta, b, F);
+
+				//Policy verif
+				if(i == RWX && j != RWY){
+					if(j < RWY){
+						if(action != EAST) wrong++;
+					}
+					else if(j > RWY){
+						if(action != WEST) wrong++;
+					}	
+				}
+
+				else if(j == RWY && i != RWX){
+					if(i < RWX){
+						if(action != SOUTH) wrong++;
+					}
+					else if(i > RWX){
+						if(action != NORTH) wrong++;
+					}	
+				}
+
+				else if(i != RWX && j != RWY){
+					if(i<RWX){
+						if(j<RWY){
+							if(action != SOUTH && action != EAST) wrong++;
+						}
+						else{
+							if(action != SOUTH && action != WEST) wrong++;
+						}
+					}
+					else{
+						if(j<RWY){
+							if(action != NORTH && action != EAST) wrong++;
+						}
+						else{
+							if(action != NORTH && action != WEST) wrong++;
+						}
+					}
+
+				 } 
+			}
+		}
+	}
+return wrong;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DISPLAY
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 	int i, j, action, wrong = 0;
@@ -397,9 +483,7 @@ void displayGridDirections(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE
 			if( i == RWX && j == RWY  ){
 				printf(" +%0.1f",  REWARD_VALUE);
 			}
-			/*else if(i == RW2X && j == RW2Y){
-				printf(" +%d  ",  REWARD_VALUE2);
-			}*/
+			
 			else{
 				generateVect(phi, i, j);
 				action = bestAction(phi, theta, b, F);
