@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "listMG.h"
+#include "listMGA.h"
 
 PQueue createPQueue(){ return NULL; }
 int emptyP(PQueue P){ return (P == NULL); }
@@ -65,12 +65,14 @@ PQueue deleteHead(PQueue P){
 }
 
 void displayPQueue(PQueue P){
-
+	PQueue tmp = P;
 	if(emptyP(P)) printf("PQueue is empty");
 	else{
-		while(P->next != NULL){
-    			printf("indice = %d priority = %f)\n",P->element.i, P->element.priority);
-   			P = P->next;
+		
+		while(tmp != NULL){
+			printf("indice = %d priority = %f\n", tmp->element.i, tmp->element.priority);
+			if(tmp->next != NULL) tmp = tmp->next;
+			else break;
 		}
 	}
 	printf("\n");

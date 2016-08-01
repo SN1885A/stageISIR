@@ -6,7 +6,7 @@
 #include "listMGA.h"
 
 //Experimentation definition
-#define NB_STEPS 10	 // 10
+#define NB_STEPS 4	 // 10
 #define NB_EPISODES 1000 // 1 000
 
 //Universe definition
@@ -45,7 +45,7 @@
 //All constants
 #define ALPHA 	0.3
 #define GAMMA 	0.9
-#define THETA_CONV 0.00008//0.01 0.000005
+#define THETA_CONV 0.01//0.00002//0.01
 #define EPSILON 0.5
 
 

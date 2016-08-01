@@ -9,6 +9,8 @@
 #define REPLAY 1 
 //#define FOR 1
 #define WHILE 1
+//#define THETA_CONV_VERIF
+#define POLICY_VERIF
 //#define DEBUG 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +166,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			if( (X+i<2 && Y+j<2) || (abs(X-i)<2 && abs(Y-j)<2)){
+			if( (X+i<1 && Y+j<1) || (abs(X-i)<1 && abs(Y-j)<1)){
 				ind = i*GRID_SIZE+j;
 				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
@@ -192,7 +194,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	
 	//Declarations
 	PQueue pQueue;
-	int i, j, e, a, pas, cpt;
+	int i, j, e, a, pas, cpt, test = 0;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0;
 	double delta, r, priority, R = 0;
@@ -205,7 +207,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 	#ifdef DEBUG
 	FILE *fileReward = NULL;
-	fileReward = fopen("rewardReplay.txt" ,"w+");
+	fileReward = fopen("rewardWithoutReplay.txt" ,"w+");
 
 	FILE *fileTimeReward = NULL;
 	fileTimeReward = fopen("rewardTime.txt" ,"w+");
@@ -324,7 +326,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					pQueueE.i = i;
 					pQueue = addElement(pQueue, pQueueE);
 				}
-				unitBasisVect[i] = 0;
+				unitBasisVect[i] = 0.0;
 			}
 			
 			int p = 0;
@@ -337,46 +339,53 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				pQueue = deleteHead(pQueue);
 				
 				int indice = head.i;
-				double resultTmp5[PHI_SIZE];
-				double tmp2;
-				for(a = 0; a<NB_ACTIONS; a++){
-					for(j=0; j<PHI_SIZE; j++){
-						if(F[a][indice][j] != 0){
-							int m;
-							double best = -DBL_MAX;
-							double result;
-							for(m=0; m<NB_ACTIONS; m++){
-								//Initialization of the unit basis vetor ej
-								unitBasisVect[j] = 1;
-								multMatrixLCarre(resultTmp5, theta, F, m);
-								tmp2 = multVectorOneValue(resultTmp5, unitBasisVect);
-								
-								unitBasisVect[j] = 0; 
-								result = (b[m][j] + GAMMA*tmp2) - theta[j];
-			
-								if(result>best) best = result;
-							}
-							
-							delta = best;
-							
-							//Updating theta
-							theta[j] += ALPHA*delta;
-							
-							//Put j on the PQueue with priority |delta|
-							PQueueE pQueueE2;
-							pQueueE2.priority = abs(delta);
-							pQueueE2.i = j;
-							pQueue = addElement(pQueue, pQueueE2);
-							
-						}
+				double resultTmp5[PHI_SIZE], tmp2;
+				int exist;
+				
+				for(j=0; j<PHI_SIZE; j++){
+					exist = 0;
+					for(a = 0; a<NB_ACTIONS; a++){
+						if(F[a][indice][j] != 0) exist = 1;
 					}
-				}
+				
+					if(exist == 1){
+						int m;
+						double best = -DBL_MAX;
+						double result;
+						for(m=0; m<NB_ACTIONS; m++){
+						
+							//Initialization of the unit basis vector ej
+							unitBasisVect[j] = 1;
+
+							multMatrixLCarre(resultTmp5, theta, F, m);
+							tmp2 = multVectorOneValue(resultTmp5, unitBasisVect);
+						
+							unitBasisVect[j] = 0; 
+							result = (b[m][j] + GAMMA*tmp2) - theta[j];
+	
+							if(result>best){
+								best = result;
+							}
+						}
+					
+						delta = best;
+					
+						//Updating theta
+						theta[j] += (ALPHA*delta);
+					
+						//Put j on the PQueue with priority |delta|
+						PQueueE pQueueE2;
+						pQueueE2.priority = fabs(delta);
+	
+						pQueueE2.i = j;
+						pQueue = addElement(pQueue, pQueueE2);
+					}
+				}	
 			}
 			#endif
 			
 			X = Xnext; Y = Ynext;
 			generateVect(phi1, X, Y);
-			
 			
 		}
 		#ifdef WHILE
@@ -393,15 +402,19 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		
 		printf("Episode n°%d\n", e);
 		
+		#ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
 		if(verif == 0){
 			break;
 		}
-		/*if(diffMax < THETA_CONV){
-			printf("diffMAx = %f\n", diffMax);
+		#endif
+
+		#ifdef THETA_CONV_VERIF
+		if(diffMax < THETA_CONV){
 			break;
-		}*/
-		
+		}
+		#endif
+
 		#ifdef DEBUG
 		fprintf(fileReward, "%f\n", R);
 		#ifdef WHILE
@@ -425,7 +438,6 @@ int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F
 				generateVect(phi, i, j);
 				action = bestAction(phi, theta, b, F);
 
-				//Policy verif
 				if(i == RWX && j != RWY){
 					if(j < RWY){
 						if(action != EAST) wrong++;

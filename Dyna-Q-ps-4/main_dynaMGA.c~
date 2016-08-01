@@ -31,11 +31,32 @@ int main() {
 
 	printf("\nSTART Dyna-Q-MG\n\n");
 	
-	dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge);
+	//dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge);
 
-	displayGridDirections(theta, b, F);
+	/*displayGridDirections(theta, b, F);
 	printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
-	printf("\nEND Dyna-Q-MG\n\n\n");
+	printf("\nEND Dyna-Q-MG\n\n\n");*/
+
+	PQueue pqueue =  createPQueue();
+	PQueueE e1, e2, e3;
+	e1.i = 1;
+	e2.i = 2;
+	e3.i = 3;
+	e1.priority = 0.9;
+	e2.priority = 0.004;
+	e3.priority = 0.3;
+
+	pqueue = addElement(pqueue, e1);
+	pqueue = addElement(pqueue, e2);
+	pqueue = addElement(pqueue, e3);
+	
+	displayPQueue(pqueue);
+
+	PQueueE e4 = headP(pqueue);
+	printf("e4.i = %d e4.priority = %f\n", e4.i, e4.priority);
+	pqueue = deleteHead(pqueue);
+
+	displayPQueue(pqueue);
 
 return 0;
 }

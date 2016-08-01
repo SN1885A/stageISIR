@@ -62,15 +62,18 @@ PQueue deleteHead(PQueue P){
 		free(r);
 		
 	}
+return P;
 }
 
 void displayPQueue(PQueue P){
-
+	PQueue tmp = P;
 	if(emptyP(P)) printf("PQueue is empty");
 	else{
-		while(P->next != NULL){
-    			printf("indice = %d priority = %f)\n",P->element.i, P->element.priority);
-   			P = P->next;
+		
+		while(tmp != NULL){
+			printf("indice = %d priority = %f\n", tmp->element.i, tmp->element.priority);
+			if(tmp->next != NULL) tmp = tmp->next;
+			else break;
 		}
 	}
 	printf("\n");
