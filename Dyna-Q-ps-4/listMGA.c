@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "listMGA.h"
 
+
 PQueue createPQueue(){ return NULL; }
 int emptyP(PQueue P){ return (P == NULL); }
 
@@ -26,6 +27,20 @@ PQueue addQueueP(PQueue P, PQueueE x){
 		P->next=addQueueP(P->next, x);
 return P;
 }
+
+ListMaxAction addElementListMaxAction(ListMaxAction list, int a){
+
+	if(list == NULL){
+		list = (PQueue)malloc(sizeof(*list));
+		list->action = a;
+		list->next=NULL;
+	}
+	else
+		list->next=addElementListMaxAction(list->next, a);
+
+	return list;
+}
+
 
 int equalsPQE(PQueueE e1, PQueueE e2){
 
@@ -79,4 +94,20 @@ void displayPQueue(PQueue P){
 	printf("\n");
 }
 
+int listMaxActionRandom(ListMaxAction list, int size){
+
+	int a;
+	ListMaxAction tmp = list;
+
+	int r = rand()%size;
+	int cpt = 0;
+
+	while(r != cpt){
+		tmp = tmp->next;
+	}
+
+	a = tmp->action;
+
+return a;
+}
 

@@ -6,12 +6,12 @@
 #include <limits.h>
 #include "dynaMGA.h"
 
-#define REPLAY 1 
+//#define REPLAY 1
 //#define FOR 1
 #define WHILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
-//#define DEBUG 1
+#define DEBUG 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
@@ -24,10 +24,19 @@ int bestAction(double phi[PHI_SIZE], double theta[PHI_SIZE], double b[NB_ACTIONS
 	double tmp[PHI_SIZE];
 	
 	for(a=0; a<NB_ACTIONS; a++){
+
+		/*
+		 	op1 = multVectorOneValue2(b, phi, a);
+			multMatrixLCarre(tmp, theta, F, a);
+			op2 = GAMMA* multVectorOneValue(tmp, theta);
+			result = op1 + op2;
+		 */
+
 		op1 = multVectorOneValue2(b, phi, a);
-		multMatrixCarreCol(tmp, F, phi, a);
-		op2 = GAMMA*multVectorOneValue(theta, tmp);
+		multMatrixLCarre(tmp, theta, F, a);
+		op2 = GAMMA*multVectorOneValue(tmp, phi);
 		result = op1 + op2;
+
 		if(result>best){
 			best = result;
 			action = a;
@@ -194,7 +203,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	
 	//Declarations
 	PQueue pQueue;
-	int i, j, e, a, pas, cpt, test = 0;
+	int i, j, e, a, pas, cpt, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0;
 	double delta, r, priority, R = 0;
@@ -206,8 +215,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	double oldTheta[PHI_SIZE];
 
 	#ifdef DEBUG
-	FILE *fileReward = NULL;
-	fileReward = fopen("rewardWithoutReplay.txt" ,"w+");
+	FILE *fileStep2ConvPerEpisode = NULL;
+	fileStep2ConvPerEpisode = fopen("fileStep2ConvPerEpisode.txt" ,"w+");
 
 	FILE *fileTimeReward = NULL;
 	fileTimeReward = fopen("rewardTime.txt" ,"w+");
@@ -239,6 +248,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		#endif
 
 		(*step_to_converge)++;
+		step_to_converge_per_episode++;
 
 		#ifdef FOR
 		int it;
@@ -302,37 +312,34 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			double resultTmp3[PHI_SIZE];
 			double resultTmp4[PHI_SIZE][PHI_SIZE];
 
-			multMatrixCarreCol(resultTmp1, F, phi1, A);			//F*phi
-			soustractionVector(resultTmp2, phi2, resultTmp1);		//phi'-F*phi
+			multMatrixCarreCol(resultTmp1, F, phi1, A);			        //F*phi
+			soustractionVector(resultTmp2, phi2, resultTmp1);		    //phi'-F*phi
 			multiplicationVectorScalar(resultTmp3, resultTmp2, ALPHA);	//alpha*(phi'-F*phi)
-			multMatrixColL(resultTmp4, resultTmp3, phi1);			//alpha*(phi'-F*phi)*(phi)T
-			additionMatrix(F, resultTmp4, A);				//F <- F + alpha*(phi'-F*phi)*(phi)T
+			multMatrixColL(resultTmp4, resultTmp3, phi1);			    //alpha*(phi'-F*phi)*(phi)T
+			additionMatrix(F, resultTmp4, A);				            //F <- F + alpha*(phi'-F*phi)*(phi)T
 			
 			//b updating
-			double tmp = multVectorOneValue2(b, phi1, A); 			//(b)T*phi
-			double lambda = ALPHA*(r-tmp);					//alpha*(r - (b)T*phi)
+			double tmp = multVectorOneValue2(b, phi1, A); 				//(b)T*phi
+			double lambda = ALPHA*(r-tmp);					        	//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
-			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
-			additionVector2(b, vectTmp, A);					//b <- b + alpha*(r - (b)T*phi)
+			multiplicationVectorScalar(vectTmp, phi1, lambda);			//alpha*(r - (b)T*phi)*phi
+			additionVector2(b, vectTmp, A);					        	//b <- b + alpha*(r - (b)T*phi)
 
 			#ifdef REPLAY
-			double unitBasisVect[PHI_SIZE];
 
 			for(i=0; i<PHI_SIZE; i++){
 				if(phi1[i] != 0){ //or threshold
-					priority = abs(delta*phi1[i]);	
+					priority = fabs(delta*phi1[i]);
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
 					pQueueE.i = i;
 					pQueue = addElement(pQueue, pQueueE);
 				}
-				unitBasisVect[i] = 0.0;
 			}
-			
+
 			int p = 0;
 			while(pQueue != NULL){
 
-				p++;
 				if(p == NB_STEPS) break;
 
 				PQueueE head = headP(pQueue);
@@ -340,47 +347,43 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				
 				int indice = head.i;
 				double resultTmp5[PHI_SIZE], tmp2;
-				int exist;
+				int exist = 0;
 				
 				for(j=0; j<PHI_SIZE; j++){
-					exist = 0;
 					for(a = 0; a<NB_ACTIONS; a++){
-						if(F[a][indice][j] != 0) exist = 1;
+							if(F[a][indice][j] != 0) exist = 1;
 					}
 				
 					if(exist == 1){
-						int m;
+						exist = 0;
+
 						double best = -DBL_MAX;
 						double result;
-						for(m=0; m<NB_ACTIONS; m++){
-						
-							//Initialization of the unit basis vector ej
-							unitBasisVect[j] = 1;
 
-							multMatrixLCarre(resultTmp5, theta, F, m);
-							tmp2 = multVectorOneValue(resultTmp5, unitBasisVect);
-						
-							unitBasisVect[j] = 0; 
-							result = (b[m][j] + GAMMA*tmp2) - theta[j];
-	
-							if(result>best){
+						for(a=0; a<NB_ACTIONS; a++){
+							multMatrixLCarre(resultTmp5, theta, F, a);
+							result = b[a][j] + (GAMMA*resultTmp5[j]);
+							if(result > best){
 								best = result;
 							}
 						}
-					
-						delta = best;
-					
+
+						delta = best - theta[j];
+
 						//Updating theta
-						theta[j] += (ALPHA*delta);
-					
+
+						theta[j] = theta[j] + (ALPHA*delta);
+
 						//Put j on the PQueue with priority |delta|
 						PQueueE pQueueE2;
 						pQueueE2.priority = fabs(delta);
 	
 						pQueueE2.i = j;
+
 						pQueue = addElement(pQueue, pQueueE2);
 					}
-				}	
+				}
+				p++;
 			}
 			#endif
 			
@@ -397,10 +400,6 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			diff = fabsf(oldTheta[i] - theta[i]);
 			if (diffMax < diff) diffMax = diff;
 		}
-
-		(*episode_to_converge) = e;
-		
-		printf("Episode n°%d\n", e);
 		
 		#ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
@@ -411,19 +410,33 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 		#ifdef THETA_CONV_VERIF
 		if(diffMax < THETA_CONV){
-			break;
+			cptStop++;
 		}
+		else{
+			cptStop = 0;
+		}
+
+		if(cptStop == HAVE_REALLY_CONV) break;
 		#endif
+
+
+		(*episode_to_converge) = e;
 
 		#ifdef DEBUG
-		fprintf(fileReward, "%f\n", R);
-		#ifdef WHILE
-		gettimeofday(&end, NULL);
-		fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
+			fprintf(fileStep2ConvPerEpisode, "%d;%d\n", e, step_to_converge_per_episode);
+			#ifdef WHILE
+				gettimeofday(&end, NULL);
+				fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
+			#endif
 		#endif
-		#endif
+
+		printf("Episode n°%d\n", e);
+		step_to_converge_per_episode = 0;
 	}
 
+	printf("Display start\n");
+	displayPQueue(pQueue);
+	printf("Display end\n");
 }
 
 int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){

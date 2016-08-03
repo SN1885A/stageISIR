@@ -9,7 +9,7 @@ int step_to_converge = 0;
 
 int main() {
 
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	int i, j, a;
 

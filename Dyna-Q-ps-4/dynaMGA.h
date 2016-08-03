@@ -6,7 +6,7 @@
 #include "listMGA.h"
 
 //Experimentation definition
-#define NB_STEPS 4	 // 10
+#define NB_STEPS 1 // 10
 #define NB_EPISODES 1000 // 1 000
 
 //Universe definition
@@ -25,7 +25,7 @@
 
 //Rewards' position
 //Milieu (2, 2), en haut à gauche (0, 0), en bas à droite (4, 4), desaxé: (1,3)/(2, 3)
-#define RWX 1 // milieu: 2 en haut à gauche 0
+#define RWX 3 // milieu: 2 en haut à gauche 0
 #define RWY 3 // milieu: 2
 //#define RW2X 0
 //#define RW2Y 3
@@ -47,7 +47,7 @@
 #define GAMMA 	0.9
 #define THETA_CONV 0.01//0.00002//0.01
 #define EPSILON 0.5
-
+#define HAVE_REALLY_CONV 10
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
