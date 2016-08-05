@@ -7,7 +7,7 @@
 
 //Experimentation definition
 #define NB_STEPS 1 // 10
-#define NB_EPISODES 1000 // 1 000
+#define NB_EPISODES 3 // 1 000
 
 //Universe definition
 #define NB_ACTIONS 4
@@ -43,9 +43,9 @@
 #define WEST    3
 
 //All constants
-#define ALPHA 	0.3
-#define GAMMA 	0.9
-#define THETA_CONV 0.01//0.00002//0.01
+#define ALPHA 	0.5
+#define GAMMA 	0.5
+#define THETA_CONV 0.015 //0.026//0.00002//0.01
 #define EPSILON 0.5
 #define HAVE_REALLY_CONV 10
 
@@ -89,6 +89,9 @@ void generateVect(double phi[PHI_SIZE], int X, int Y);
 void normalize(double phi[PHI_SIZE]);
 
 int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]);
+
+ListMaxAction bestActionForVerifPolicy(double phi[PHI_SIZE], double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Display
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

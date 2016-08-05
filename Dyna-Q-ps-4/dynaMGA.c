@@ -11,7 +11,7 @@
 #define WHILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
-#define DEBUG 1
+//#define DEBUG 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
@@ -20,31 +20,53 @@
 int bestAction(double phi[PHI_SIZE], double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 
 	double best = -DBL_MAX, result, op1, op2;
-	int a, action = 0;
+	int a, action = 0, size = 0;
 	double tmp[PHI_SIZE];
+	ListMaxAction listMaxAction = NULL;
 	
 	for(a=0; a<NB_ACTIONS; a++){
-
-		/*
-		 	op1 = multVectorOneValue2(b, phi, a);
-			multMatrixLCarre(tmp, theta, F, a);
-			op2 = GAMMA* multVectorOneValue(tmp, theta);
-			result = op1 + op2;
-		 */
-
 		op1 = multVectorOneValue2(b, phi, a);
 		multMatrixLCarre(tmp, theta, F, a);
 		op2 = GAMMA*multVectorOneValue(tmp, phi);
 		result = op1 + op2;
 
-		if(result>best){
+		if(result>=best){
 			best = result;
 			action = a;
-		}	
+			listMaxAction = addElementListMaxAction(listMaxAction, a, best, &size);
+
+		}
 	}
+
+	action = listMaxActionRandom(listMaxAction, size);
 
 return action;
 }
+
+ListMaxAction bestActionForVerifPolicy(double phi[PHI_SIZE], double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
+
+	double best = -DBL_MAX, result, op1, op2;
+	int a, action = 0, size = 0;
+	double tmp[PHI_SIZE];
+	ListMaxAction listMaxAction = NULL;
+
+	for(a=0; a<NB_ACTIONS; a++){
+		op1 = multVectorOneValue2(b, phi, a);
+		multMatrixLCarre(tmp, theta, F, a);
+		op2 = GAMMA*multVectorOneValue(tmp, phi);
+		result = op1 + op2;
+
+		if(result>=best){
+			best = result;
+			action = a;
+			listMaxAction = addElementListMaxAction(listMaxAction, a, best, &size);
+
+		}
+	}
+
+return listMaxAction;
+}
+
 
 int e_greedy(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 
@@ -226,6 +248,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 	for(e=0; e<NB_EPISODES; e++){
 		
+		//printf("Episode n°%d\n", e);
 		cpt = 0;
 
 		for(i=0; i<PHI_SIZE; i++)  oldTheta[i] = theta[i];
@@ -233,7 +256,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		//Select a random real state
 		X = rand()%GRID_SIZE; 
 		Y = rand()%GRID_SIZE;
-		
+
 		//Generate a feature vector
 		generateVect(phi1, X, Y);
 		
@@ -246,7 +269,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		#ifdef WHILE
 		do{
 		#endif
-
+		//while( cpt != 1 ) {
 		(*step_to_converge)++;
 		step_to_converge_per_episode++;
 
@@ -259,10 +282,10 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			//next real state
 			Xnext = X;
 			Ynext = Y; 
-			
+
 			//Select an action
 			A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
-			
+
 			//reward
 			r = 0;
 
@@ -277,25 +300,25 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = -0.1;
+						if(X==0)  r = 0; //-0.1;
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = -0.1;
+						if(Y==GRID_SIZE-1)r = 0;//-0.1;
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
-						if(X==GRID_SIZE-1) r = -0.1;
+						if(X==GRID_SIZE-1) r = 0;//-0.1;
 						else Xnext = X + 1;
 					break;
 					case WEST: 
-						if(Y==0) r = -0.1;
+						if(Y==0) r = 0;//-0.1;
 						else Ynext = Y - 1;
 					break;
 					
 				}
 			}
-			
+
 			R += r;
 			generateVect(phi2, Xnext, Ynext);
 
@@ -333,7 +356,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 					PQueueE pQueueE;
 					pQueueE.priority = priority;
 					pQueueE.i = i;
-					pQueue = addElement(pQueue, pQueueE);
+					if(priority != 0)
+						pQueue = addElement(pQueue, pQueueE);
 				}
 			}
 
@@ -380,7 +404,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	
 						pQueueE2.i = j;
 
-						pQueue = addElement(pQueue, pQueueE2);
+						if(pQueueE2.priority != 0)
+							pQueue = addElement(pQueue, pQueueE2);
 					}
 				}
 				p++;
@@ -389,21 +414,23 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			
 			X = Xnext; Y = Ynext;
 			generateVect(phi1, X, Y);
-			
+
 		}
 		#ifdef WHILE
 		while(cpt != 2);
 		#endif
+
 
 		double diff, diffMax = 0;
 		for(i=0; i<PHI_SIZE; i++){
 			diff = fabsf(oldTheta[i] - theta[i]);
 			if (diffMax < diff) diffMax = diff;
 		}
-		
+
 		#ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
 		if(verif == 0){
+			(*episode_to_converge) = e;
 			break;
 		}
 		#endif
@@ -430,13 +457,9 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			#endif
 		#endif
 
-		printf("Episode n°%d\n", e);
 		step_to_converge_per_episode = 0;
-	}
 
-	printf("Display start\n");
-	displayPQueue(pQueue);
-	printf("Display end\n");
+	}
 }
 
 int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
@@ -446,53 +469,69 @@ int verifPolicy(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F
 
 	for(i=0; i<GRID_SIZE; i++){
 		for(j=0; j<GRID_SIZE; j++){
-			if( !(i == RWX && j == RWY)  ){
 
+			if( i == RWX && j == RWY  ){
+
+			}
+
+			else{
 				generateVect(phi, i, j);
-				action = bestAction(phi, theta, b, F);
+				ListMaxAction listMaxAction = NULL;
+				listMaxAction = bestActionForVerifPolicy(phi, theta, b, F);
 
-				if(i == RWX && j != RWY){
-					if(j < RWY){
-						if(action != EAST) wrong++;
+				while(listMaxAction != NULL){
+
+					action = listMaxAction->action;
+
+					//Policy verif
+					if(i == RWX && j != RWY){
+						if(j < RWY){
+							if(action != EAST) wrong++;
+						}
+						else if(j > RWY){
+							if(action != WEST) wrong++;
+						}
 					}
-					else if(j > RWY){
-						if(action != WEST) wrong++;
-					}	
-				}
 
-				else if(j == RWY && i != RWX){
-					if(i < RWX){
-						if(action != SOUTH) wrong++;
+					else if(j == RWY && i != RWX){
+						if(i < RWX){
+							if(action != SOUTH) wrong++;
+						}
+						else if(i > RWX){
+							if(action != NORTH) wrong++;
+						}
 					}
-					else if(i > RWX){
-						if(action != NORTH) wrong++;
-					}	
-				}
 
-				else if(i != RWX && j != RWY){
-					if(i<RWX){
-						if(j<RWY){
-							if(action != SOUTH && action != EAST) wrong++;
+					else if(i != RWX && j != RWY){
+						if(i<RWX){
+							if(j<RWY){
+								if(action != SOUTH && action != EAST) wrong++;
+							}
+							else{
+								if(action != SOUTH && action != WEST) wrong++;
+							}
 						}
 						else{
-							if(action != SOUTH && action != WEST) wrong++;
+							if(j<RWY){
+								if(action != NORTH && action != EAST) wrong++;
+							}
+							else{
+								if(action != NORTH && action != WEST) wrong++;
+							}
 						}
-					}
-					else{
-						if(j<RWY){
-							if(action != NORTH && action != EAST) wrong++;
-						}
-						else{
-							if(action != NORTH && action != WEST) wrong++;
-						}
-					}
 
-				 } 
+					}
+					if(listMaxAction->next != NULL) listMaxAction = listMaxAction->next;
+					else break;
+				}
 			}
 		}
 	}
-return wrong;
+
+	return wrong;
+
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DISPLAY
