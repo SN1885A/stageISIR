@@ -6,14 +6,14 @@
 #include "listMGA.h"
 
 //Experimentation definition
-#define NB_STEPS 1 // 10
-#define NB_EPISODES 3 // 1 000
+#define NB_STEPS 5 // 10
+#define NB_EPISODES 10000 // 1 0000
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 5 //5
+#define GRID_SIZE 10 //5
 
-#define PHI_SIZE 25//25 //5*5
+#define PHI_SIZE 100//25 //5*5
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -43,10 +43,11 @@
 #define WEST    3
 
 //All constants
-#define ALPHA 	0.5
-#define GAMMA 	0.5
-#define THETA_CONV 0.015 //0.026//0.00002//0.01
-#define EPSILON 0.5
+#define ALPHA 	0.3
+#define GAMMA 	0.7
+#define TAU 	0.7
+#define THETA_CONV  0.00002
+#define EPSILON 0.06
 #define HAVE_REALLY_CONV 10
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

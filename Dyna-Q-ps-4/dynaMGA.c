@@ -6,7 +6,7 @@
 #include <limits.h>
 #include "dynaMGA.h"
 
-//#define REPLAY 1
+#define REPLAY 1
 //#define FOR 1
 #define WHILE 1
 //#define THETA_CONV_VERIF
@@ -66,6 +66,41 @@ ListMaxAction bestActionForVerifPolicy(double phi[PHI_SIZE], double theta[PHI_SI
 
 return listMaxAction;
 }
+
+/*int softmax(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
+ListMaxAction
+	int a, i;
+	double tabValue[NB_ACTIONS], tabProb[NB_ACTIONS], op1, op2, tmp, result, sum = 0, r;
+	if(x==RWX && y==RWY) a = rand()%NB_ACTIONS;
+	else{
+		for(i = 0; i < NB_ACTIONS; i++){
+
+			op1 = multVectorOneValue2(b, phi, a);
+			multMatrixLCarre(tmp, theta, F, a);
+			op2 = GAMMA*multVectorOneValue(tmp, phi);
+			tabValue[i] = op1 + op2;
+			sum += tabValue[i];
+		}
+		for(i = 0; i < NB_ACTIONS; i++){
+			double div1, div2;
+			div1 = sum - tabValue[i];
+			tabProb[i] = (exp(div1)/TAU)/(exp(div2)/TAU);
+			double r = (double)rand()/RAND_MAX;
+			if(0 <= r && r < tabProb[0]) a = ;
+			else if(tabProb[0] <= r && r < tabProb[1]){
+			}
+			else if(tabProb[1] <= r && r < tabProb[2]){
+			}
+			else{
+
+			}
+		}
+
+
+	}
+
+return a;
+}*/
 
 
 int e_greedy(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
@@ -248,7 +283,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 	for(e=0; e<NB_EPISODES; e++){
 		
-		//printf("Episode n°%d\n", e);
+		printf("Episode n°%d\n", e);
 		cpt = 0;
 
 		for(i=0; i<PHI_SIZE; i++)  oldTheta[i] = theta[i];
@@ -271,6 +306,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		#endif
 		//while( cpt != 1 ) {
 		(*step_to_converge)++;
+		printf("Step to converge = %d\n", *step_to_converge);
 		step_to_converge_per_episode++;
 
 		#ifdef FOR
@@ -300,19 +336,19 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = 0; //-0.1;
+						if(X==0)   r = 0;
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = 0;//-0.1;
+						if(Y==GRID_SIZE-1)r = 0;
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
-						if(X==GRID_SIZE-1) r = 0;//-0.1;
+						if(X==GRID_SIZE-1) r = 0;
 						else Xnext = X + 1;
 					break;
 					case WEST: 
-						if(Y==0) r = 0;//-0.1;
+						if(Y==0) r = 0;
 						else Ynext = Y - 1;
 					break;
 					

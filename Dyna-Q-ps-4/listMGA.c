@@ -28,19 +28,6 @@ PQueue addQueueP(PQueue P, PQueueE x){
 return P;
 }
 
-ListMaxAction addElementListMaxAction(ListMaxAction list, int a){
-
-	if(list == NULL){
-		list = (PQueue)malloc(sizeof(*list));
-		list->action = a;
-		list->next=NULL;
-	}
-	else
-		list->next=addElementListMaxAction(list->next, a);
-
-	return list;
-}
-
 
 int equalsPQE(PQueueE e1, PQueueE e2){
 
@@ -58,7 +45,7 @@ PQueue addElement(PQueue P, PQueueE x){
 		else{
 		        P->next = addElement(P->next, x);
 		}
-    	}
+    }
 	else
         	P = addQueueP(P, x);
 return P;
@@ -94,6 +81,43 @@ void displayPQueue(PQueue P){
 	printf("\n");
 }
 
+
+ListMaxAction addElementListQueue(ListMaxAction list, int a, double value){
+
+	if(list == NULL){
+		list=(ListMaxAction)malloc(sizeof(*list));
+		list->action=a;
+		list->value = value;
+		list->next=NULL;
+	}
+	else
+		list->next=addElementListQueue(list->next, a, value);
+
+return list;
+}
+
+ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, int *size){
+
+	if(list == NULL){
+		list = addElementListQueue(list, a, value);
+		(*size)++;
+	}
+	else{
+		if(list->value == value){
+			list = addElementListQueue(list, a, value);
+			(*size)++;
+		}
+		else{
+			list = NULL;
+			list = addElementListQueue(list, a, value);
+			(*size) = 1;
+		}
+
+	}
+
+	return list;
+}
+
 int listMaxActionRandom(ListMaxAction list, int size){
 
 	int a;
@@ -104,10 +128,57 @@ int listMaxActionRandom(ListMaxAction list, int size){
 
 	while(r != cpt){
 		tmp = tmp->next;
+		cpt++;
 	}
-
 	a = tmp->action;
 
 return a;
 }
+
+ListIndAction addHeadLIA(ListIndAction L, int action, double prob){
+
+	ListIndAction newList;
+	newList=(PQueue)malloc(sizeof(*newList));
+	newList->prob = prob;
+	newList->action = action;
+	newList->next = L;
+
+	return L;
+}
+
+ListIndAction addQueueLIA(ListIndAction L, int action, double prob){
+
+	if(L==NULL){
+			L=(PQueue)malloc(sizeof(*L));
+			L->prob = prob;
+			L->action = action;
+			L->next = NULL;
+		}
+		else
+			L->next = addQueueLIA(L->next, action, prob);
+	return L;
+
+}
+
+ListIndAction addElementLIA(ListIndAction L, int action, double prob){
+
+	/*if(L != NULL){
+			if(equalsPQE(P->element, x)){
+				if(P->element.priority < x.priority) P->element.priority = x.priority;
+			}
+			else if(L->prob < x.priority)
+			    P = addHeadP(P, x);
+			else{
+			        P->next = addElement(P->next, x);
+			}
+	    }
+		else
+	        	L = addQueueLIA(L, action, prob);*/
+
+	return L;
+}
+
+
+
+
 

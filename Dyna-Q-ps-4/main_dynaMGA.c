@@ -8,18 +8,18 @@ int episode_to_converge = 0;
 int step_to_converge = 0;
 
 int main() {
-	/*int it;
+	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("testSeedReplay", "w+");
+	//testSeed = fopen("testSeedWithReplay_steps", "w+");
 
-	//srand(time(NULL));
-	for(it = 0; it < 10; it++){
-		srand(it);*/
+	//for(it = 8; it < 50; it++){
+		//srand(it);
+		printf("Seed = %d\n", it);
 		int i, j, a;
-		srand(8);
+		srand(4);
 		//All vectors initialization
-		double theta[PHI_SIZE]; 			//Weights
-		double b[NB_ACTIONS][PHI_SIZE]; 		//Rewards for every action a
+		double theta[PHI_SIZE]; 					//Weights
+		double b[NB_ACTIONS][PHI_SIZE]; 			//Rewards for every action a
 		double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE];	//Transition matrix for every action a
 
 		for(i=0; i<PHI_SIZE; i++) theta[i] = 0;
@@ -33,19 +33,20 @@ int main() {
 			}
 		}
 
-		printf("\nSTART Dyna-Q-MG\n\n");
+		///printf("\nSTART Dyna-Q-MG\n\n");
 
 		dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge);
 	
-		displayGridDirections(theta, b, F);
-		printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
-		printf("\nEND Dyna-Q-MG\n\n\n");
+		//displayGridDirections(theta, b, F);
+		//printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
+		//printf("\nEND Dyna-Q-MG\n\n\n");
 
 
-	   /* fprintf(testSeed, "%d;%d\n", it,step_to_converge);
+	   // fprintf(testSeed, "%d;%d\n", it, step_to_converge);
 	    step_to_converge = 0;
 
-	}*/
+	//}
+
 return 0;
 }
 
