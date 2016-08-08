@@ -143,7 +143,7 @@ ListIndAction addHeadLIA(ListIndAction L, int action, double prob){
 	newList->action = action;
 	newList->next = L;
 
-	return L;
+return L;
 }
 
 ListIndAction addQueueLIA(ListIndAction L, int action, double prob){
@@ -156,26 +156,24 @@ ListIndAction addQueueLIA(ListIndAction L, int action, double prob){
 		}
 		else
 			L->next = addQueueLIA(L->next, action, prob);
-	return L;
+return L;
 
 }
 
 ListIndAction addElementLIA(ListIndAction L, int action, double prob){
 
-	/*if(L != NULL){
-			if(equalsPQE(P->element, x)){
-				if(P->element.priority < x.priority) P->element.priority = x.priority;
-			}
-			else if(L->prob < x.priority)
-			    P = addHeadP(P, x);
-			else{
-			        P->next = addElement(P->next, x);
-			}
-	    }
-		else
-	        	L = addQueueLIA(L, action, prob);*/
+	if(L != NULL){
 
-	return L;
+		if(L->prob < L.prob)
+			L = addHeadLIA(L, action, prob);
+		else{
+				L->next = addElementLIA(L->next, action, prob);
+		}
+	}
+	else
+		L = addQueueLIA(L, action, prob);
+
+return L;
 }
 
 

@@ -74,12 +74,12 @@ ListMaxAction
 	if(x==RWX && y==RWY) a = rand()%NB_ACTIONS;
 	else{
 		for(i = 0; i < NB_ACTIONS; i++){
-
 			op1 = multVectorOneValue2(b, phi, a);
 			multMatrixLCarre(tmp, theta, F, a);
 			op2 = GAMMA*multVectorOneValue(tmp, phi);
 			tabValue[i] = op1 + op2;
 			sum += tabValue[i];
+			addElementLIA(ListIndAction L, i, tabValue[i]);
 		}
 		for(i = 0; i < NB_ACTIONS; i++){
 			double div1, div2;

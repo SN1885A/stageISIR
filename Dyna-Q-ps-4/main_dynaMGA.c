@@ -16,7 +16,7 @@ int main() {
 		//srand(it);
 		printf("Seed = %d\n", it);
 		int i, j, a;
-		srand(4);
+		srand(7);
 		//All vectors initialization
 		double theta[PHI_SIZE]; 					//Weights
 		double b[NB_ACTIONS][PHI_SIZE]; 			//Rewards for every action a
