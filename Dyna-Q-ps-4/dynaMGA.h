@@ -8,7 +8,7 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 10000 // 1 0000
-//#define REPLAY 1
+#define REPLAY 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
 //#define DEBUG 1
@@ -45,7 +45,7 @@
 //All constants
 #define ALPHA 	0.3
 #define GAMMA 	0.7
-#define TAU 	0.7
+#define TAU 	1
 #define THETA_CONV  0.00002
 #define EPSILON 0.06
 #define HAVE_REALLY_CONV 10

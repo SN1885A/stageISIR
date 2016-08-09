@@ -1,4 +1,4 @@
-// alpha = 0.3 | gamma = 0.7 | epsilon 0.06 | vecteur à 1 à un endroit
+// alpha = 0.3 | gamma = 0.7 | epsilon 0.06 | vecteur à 1 à un endroit | policy verif
 0;6505
 1;6505
 2;23473

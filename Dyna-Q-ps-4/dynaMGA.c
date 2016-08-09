@@ -63,40 +63,48 @@ return listMaxAction;
 int softmax(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
 
 	ListIndAction list = NULL;
-	int a, i;
-	double tabValue[NB_ACTIONS], tabProb[NB_ACTIONS], op1, op2, tmp, result, sum = 0, r;
+	int a = 2, i;
+	double tabValue[NB_ACTIONS], op1, op2, result, sum = 0, r;
+	double tmp[PHI_SIZE];
 
-	if(x==RWX && y==RWY) a = rand()%NB_ACTIONS;
+	if(x==RWX && y==RWY){
+		a = rand()%NB_ACTIONS;
+	}
+
 	else{
+
 		for(i = 0; i < NB_ACTIONS; i++){
 			op1 = multVectorOneValue2(b, phi, a);
 			multMatrixLCarre(tmp, theta, F, a);
 			op2 = GAMMA*multVectorOneValue(tmp, phi);
 			tabValue[i] = op1 + op2;
 			sum += tabValue[i];
-			addElementLIA(list, i, tabValue[i]);
+
 		}
-		while(list != NULL)
+
 		for(i = 0; i < NB_ACTIONS; i++){
-			double div1, div2;
-			div1 = sum - tabValue[i];
-			tabProb[i] = (exp(div1)/TAU)/(exp(div2)/TAU);
-			double r = (double)rand()/RAND_MAX;
-			if(0 <= r && r < list->prob){
-				a = list->action;
-			}
-			else if(list->prob <= r && r < list->next->prob){
-				a = list->next->action;
-			}
-			else if(list->next->prob <= r && r < list->next->next->prob){
-				a = list->next->next->action;
-			}
-			else{
-				a = list->next->next->next->action;
-			}
+			result = exp(tabValue[i]/TAU)/exp(sum/TAU);
+			list = addElementLIA(list, i, result);
 		}
+
+		r = (double)rand()/RAND_MAX;
+
+		if(0 <= r && r < list->prob){
+			a = list->action;
+		}
+		else if(list->prob <= r && r < list->next->prob){
+			a = list->next->action;
+		}
+		else if(list->next->prob <= r && r < list->next->next->prob){
+			a = list->next->next->action;
+		}
+		else{
+			a = list->next->next->next->action;
+		}
+
 	}
 
+printf("a = %d\n", a);
 return a;
 }
 
@@ -230,11 +238,15 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			if( (X+i<3 && Y+j<3) || (abs(X-i)<3 && abs(Y-j)<3)){
+			//if( (X+i<3 && Y+j<3) || (abs(X-i)<3 && abs(Y-j)<3)){
 				ind = i*GRID_SIZE+j;
 				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
+			if(generateGaussian(VAR, ECTYPE, distance) > 0.4){
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
+
 			}
+			else
+				phi[ind] = 0;
 		}
 	}
 	ind = X*GRID_SIZE+Y;
@@ -313,6 +325,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 
 			//Select an action
 			A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
+			//A = softmax(X, Y, phi1, theta, EPSILON, b, F);
 
 			//reward
 			r = 0;

@@ -14,7 +14,7 @@ int main() {
 
 	//for(it = 8; it < 50; it++){
 		//srand(it);
-		printf("Seed = %d\n", it);
+		//printf("Seed = %d\n", it);
 		int i, j, a;
 		srand(23);
 		//All vectors initialization

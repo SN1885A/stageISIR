@@ -138,7 +138,7 @@ return a;
 ListIndAction addHeadLIA(ListIndAction L, int action, double prob){
 
 	ListIndAction newList;
-	newList=(PQueue)malloc(sizeof(*newList));
+	newList=(ListIndAction)malloc(sizeof(*newList));
 	newList->prob = prob;
 	newList->action = action;
 	newList->next = L;
@@ -149,7 +149,7 @@ return L;
 ListIndAction addQueueLIA(ListIndAction L, int action, double prob){
 
 	if(L==NULL){
-			L=(PQueue)malloc(sizeof(*L));
+			L=(ListIndAction)malloc(sizeof(*L));
 			L->prob = prob;
 			L->action = action;
 			L->next = NULL;
@@ -175,7 +175,19 @@ ListIndAction addElementLIA(ListIndAction L, int action, double prob){
 return L;
 }
 
+void displayLIA(PQueue P){
+	PQueue tmp = P;
+	if(emptyP(P)) printf("PQueue is empty");
+	else{
 
+		while(tmp != NULL){
+			printf("indice = %d priority = %f\n", tmp->element.i, tmp->element.priority);
+			if(tmp->next != NULL) tmp = tmp->next;
+			else break;
+		}
+	}
+	printf("\n");
+}
 
 
 
