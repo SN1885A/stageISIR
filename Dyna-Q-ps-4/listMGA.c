@@ -164,11 +164,10 @@ ListIndAction addElementLIA(ListIndAction L, int action, double prob){
 
 	if(L != NULL){
 
-		if(L->prob < L.prob)
+		if(L->prob < prob)
 			L = addHeadLIA(L, action, prob);
-		else{
+		else
 				L->next = addElementLIA(L->next, action, prob);
-		}
 	}
 	else
 		L = addQueueLIA(L, action, prob);

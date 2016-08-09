@@ -6,13 +6,6 @@
 #include <limits.h>
 #include "dynaMGA.h"
 
-#define REPLAY 1
-//#define FOR 1
-#define WHILE 1
-//#define THETA_CONV_VERIF
-#define POLICY_VERIF
-//#define DEBUG 1
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,10 +60,12 @@ ListMaxAction bestActionForVerifPolicy(double phi[PHI_SIZE], double theta[PHI_SI
 return listMaxAction;
 }
 
-/*int softmax(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
-ListMaxAction
+int softmax(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
+
+	ListIndAction list = NULL;
 	int a, i;
 	double tabValue[NB_ACTIONS], tabProb[NB_ACTIONS], op1, op2, tmp, result, sum = 0, r;
+
 	if(x==RWX && y==RWY) a = rand()%NB_ACTIONS;
 	else{
 		for(i = 0; i < NB_ACTIONS; i++){
@@ -79,28 +74,31 @@ ListMaxAction
 			op2 = GAMMA*multVectorOneValue(tmp, phi);
 			tabValue[i] = op1 + op2;
 			sum += tabValue[i];
-			addElementLIA(ListIndAction L, i, tabValue[i]);
+			addElementLIA(list, i, tabValue[i]);
 		}
+		while(list != NULL)
 		for(i = 0; i < NB_ACTIONS; i++){
 			double div1, div2;
 			div1 = sum - tabValue[i];
 			tabProb[i] = (exp(div1)/TAU)/(exp(div2)/TAU);
 			double r = (double)rand()/RAND_MAX;
-			if(0 <= r && r < tabProb[0]) a = ;
-			else if(tabProb[0] <= r && r < tabProb[1]){
+			if(0 <= r && r < list->prob){
+				a = list->action;
 			}
-			else if(tabProb[1] <= r && r < tabProb[2]){
+			else if(list->prob <= r && r < list->next->prob){
+				a = list->next->action;
+			}
+			else if(list->next->prob <= r && r < list->next->next->prob){
+				a = list->next->next->action;
 			}
 			else{
-
+				a = list->next->next->next->action;
 			}
 		}
-
-
 	}
 
 return a;
-}*/
+}
 
 
 int e_greedy(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
@@ -232,7 +230,7 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-			if( (X+i<1 && Y+j<1) || (abs(X-i)<1 && abs(Y-j)<1)){
+			if( (X+i<3 && Y+j<3) || (abs(X-i)<3 && abs(Y-j)<3)){
 				ind = i*GRID_SIZE+j;
 				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
@@ -301,18 +299,12 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		gettimeofday(&start, NULL);
 		#endif
 		
-		#ifdef WHILE
 		do{
-		#endif
-		//while( cpt != 1 ) {
+
 		(*step_to_converge)++;
 		printf("Step to converge = %d\n", *step_to_converge);
 		step_to_converge_per_episode++;
 
-		#ifdef FOR
-		int it;
-		for(it = 0; it<30; it++){
-		#endif
 			if(cpt == 1) cpt++;
 	
 			//next real state
@@ -452,9 +444,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 			generateVect(phi1, X, Y);
 
 		}
-		#ifdef WHILE
 		while(cpt != 2);
-		#endif
 
 
 		double diff, diffMax = 0;
