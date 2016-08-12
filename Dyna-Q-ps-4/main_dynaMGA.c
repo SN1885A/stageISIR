@@ -9,14 +9,15 @@ int step_to_converge = 0;
 
 int main() {
 	int it;
-	FILE *testSeed = NULL;
+/*	FILE *testSeed = NULL;
 	testSeed = fopen("testSeedWithReplay_steps_episodes", "w+");
-
-	for(it = 0; it < 100; it++){
+	printf("test seed = %d\n", testSeed);
+	for(it = 0; it < 2; it++){
 		srand(it);
-		printf("Seed = %d\n", it);
-		int i, j, a;
 
+		printf("Seed = %d\n", it);*/
+		int i, j, a;
+		srand(28);
 		//All vectors initialization
 		double theta[PHI_SIZE]; 					//Weights
 		double b[NB_ACTIONS][PHI_SIZE]; 			//Rewards for every action a
@@ -39,13 +40,13 @@ int main() {
 	
 		//displayGridDirections(theta, b, F);
 		//printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
-		//printf("\nEND Dyna-Q-MG\n\n\n");
+		printf("\nEND Dyna-Q-MG\n\n\n");
 
 
-	    fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
+	   /* fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
 	    step_to_converge = 0;
-
-	}
+	    episode_to_converge = 0;
+	}*/
 
 return 0;
 }
