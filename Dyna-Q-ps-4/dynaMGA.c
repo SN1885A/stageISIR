@@ -239,11 +239,11 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
 			//if( (X+i<3 && Y+j<3) || (abs(X-i)<3 && abs(Y-j)<3)){
-				ind = i*GRID_SIZE+j;
-				distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
+			ind = i*GRID_SIZE+j;
+			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
+
 			if(generateGaussian(VAR, ECTYPE, distance) > 0.4){
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
-
 			}
 			else
 				phi[ind] = 0;
