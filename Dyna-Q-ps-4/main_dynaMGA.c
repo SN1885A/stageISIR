@@ -9,15 +9,15 @@ int step_to_converge = 0;
 
 int main() {
 	int it;
-/*	FILE *testSeed = NULL;
+	FILE *testSeed = NULL;
 	testSeed = fopen("testSeedWithReplay_steps_episodes", "w+");
 	printf("test seed = %d\n", testSeed);
-	for(it = 0; it < 2; it++){
+	for(it = 0; it < 15; it++){
 		srand(it);
 
-		printf("Seed = %d\n", it);*/
+		printf("Seed = %d\n", it);
 		int i, j, a;
-		srand(0);
+		//srand(0);
 		//All vectors initialization
 		double theta[PHI_SIZE]; 					//Weights
 		double b[NB_ACTIONS][PHI_SIZE]; 			//Rewards for every action a
@@ -43,10 +43,12 @@ int main() {
 		printf("\nEND Dyna-Q-MG\n\n\n");
 
 
-	   /* fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
+	    fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
 	    step_to_converge = 0;
 	    episode_to_converge = 0;
-	}*/
+
+	}
+	fclose(testSeed);
 
 return 0;
 }
