@@ -10,9 +10,9 @@ int step_to_converge = 0;
 int main() {
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("testSeedWithoutReplay_steps_episodes2", "w+");
+	testSeed = fopen("testSeedWithoutReplay_steps_episodes2", "w");
 	printf("test seed = %d\n", testSeed);
-	for(it = 61; it < 76; it++){
+	for(it = 61; it < 80; it++){
 		srand(it);
 
 		printf("Seed = %d\n", it);
