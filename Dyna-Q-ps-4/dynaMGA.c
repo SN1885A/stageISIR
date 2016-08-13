@@ -280,6 +280,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 	PQueueE pQueueE2;
 
 	pQueue = createPQueue();
+
 	double oldTheta[PHI_SIZE];
 
 	#ifdef DEBUG
@@ -448,8 +449,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 						pQueueE2.priority = fabs(delta);
 	
 						pQueueE2.i = j;
-						if(pQueueE2.priority != 0 && pQueueE2.priority < DBL_MAX)
-							pQueue = addElement(pQueue, pQueueE2);
+						//if(pQueueE2.priority != 0 && pQueueE2.priority < DBL_MAX)
+							//pQueue = addElement(pQueue, pQueueE2);
 					}
 				}
 				p++;

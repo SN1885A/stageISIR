@@ -6,7 +6,7 @@
 #include "listMGA.h"
 
 //Experimentation definition
-#define NB_STEPS 10 // 10
+#define NB_STEPS 2 // 10
 #define NB_EPISODES 100000 // 1 0000
 #define REPLAY 1
 //#define THETA_CONV_VERIF
@@ -15,7 +15,7 @@
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 10 //5
+#define GRID_SIZE 10//5
 
 //State vector
 #define PHI_SIZE 100//25 //5*5

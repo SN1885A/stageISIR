@@ -12,6 +12,7 @@ typedef struct PQueueE{
 typedef struct cellP{
 	PQueueE element;
 	struct cellP *next;
+
 }*PQueue;
 
 //List of actions with the same value
