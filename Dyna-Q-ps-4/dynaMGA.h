@@ -6,7 +6,7 @@
 #include "listMGA.h"
 
 //Experimentation definition
-#define NB_STEPS 5 // 10
+#define NB_STEPS 10 // 10
 #define NB_EPISODES 100000 // 1 0000
 #define REPLAY 1
 //#define THETA_CONV_VERIF

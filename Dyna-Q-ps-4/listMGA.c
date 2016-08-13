@@ -31,7 +31,7 @@ return P;
 
 int equalsPQE(PQueueE e1, PQueueE e2){
 
-	if(e1.i == e2.i && e1.priority == e2.priority) return 1;
+	if(e1.i == e2.i) return 1;
 	else return 0;
 }
 

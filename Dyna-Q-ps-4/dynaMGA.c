@@ -238,13 +238,13 @@ void generateVect(double phi[PHI_SIZE], int X, int Y){
 	for(i = 0; i<PHI_SIZE; i++) phi[i] = 0;
 	for(i = 0; i<GRID_SIZE; i++){
 		for(j = 0; j<GRID_SIZE; j++){
-		if( (X+i<1 && Y+j<1) || (abs(X-i)<1 && abs(Y-j)<1)){
+		//if( (X+i<1 && Y+j<1) || (abs(X-i)<1 && abs(Y-j)<1)){
 			ind = i*GRID_SIZE+j;
 			distance = sqrt( pow((X-i)*DISTANCE, 2) + pow((Y-j)*DISTANCE , 2) );
 
-			//if(generateGaussian(VAR, ECTYPE, distance) > 0.4){
+			if(generateGaussian(VAR, ECTYPE, distance) > 0.4){
 				phi[ind] = generateGaussian(VAR, ECTYPE, distance);
-		}
+			}
 			else
 				phi[ind] = 0;
 		}
@@ -315,9 +315,7 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 		do{
 
 		(*step_to_converge)++;
-		if(*step_to_converge == 15181){
-			printf("IICCCII\n");
-		}
+
 		printf("Step to converge = %d\n", *step_to_converge);
 		step_to_converge_per_episode++;
 
@@ -450,8 +448,8 @@ void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB
 						pQueueE2.priority = fabs(delta);
 	
 						pQueueE2.i = j;
-						//if(pQueueE2.priority != 0 && pQueueE2.priority < DBL_MAX)
-							//pQueue = addElement(pQueue, pQueueE2);
+						if(pQueueE2.priority != 0 && pQueueE2.priority < DBL_MAX)
+							pQueue = addElement(pQueue, pQueueE2);
 					}
 				}
 				p++;
