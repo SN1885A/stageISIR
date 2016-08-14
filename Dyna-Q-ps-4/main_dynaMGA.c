@@ -44,7 +44,7 @@ int main() {
 		printf("\nEND Dyna-Q-MG\n\n\n");
 
 
-	    printf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
+	    fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
 	    step_to_converge = 0;
 	    episode_to_converge = 0;
 
