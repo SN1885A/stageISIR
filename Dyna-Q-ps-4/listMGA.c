@@ -28,6 +28,13 @@ PQueue addQueueP(PQueue P, PQueueE x){
 return P;
 }
 
+void suppPQueue(PQueue P){
+	while(P != NULL){
+		PQueue tmp = P->next;
+		free(P);
+		P = tmp;
+	}
+}
 
 int equalsPQE(PQueueE e1, PQueueE e2){
 
@@ -96,6 +103,8 @@ ListMaxAction addElementListQueue(ListMaxAction list, int a, double value){
 return list;
 }
 
+
+
 ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, int *size){
 
 	if(list == NULL){
@@ -116,6 +125,26 @@ ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, i
 	}
 
 	return list;
+}
+
+ListMaxAction deleteHeadListMaxAction(ListMaxAction P){
+
+	if (P == NULL) return NULL;
+	else{
+		ListMaxAction r = P;
+		P = P->next;
+		free(r);
+
+	}
+return P;
+}
+
+void suppListMaxAction(ListMaxAction L){
+	while(L != NULL){
+		ListMaxAction tmp = L->next;
+		free(L);
+		L = tmp;
+	}
 }
 
 int listMaxActionRandom(ListMaxAction list, int size){
