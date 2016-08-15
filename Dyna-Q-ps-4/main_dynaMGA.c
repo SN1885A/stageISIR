@@ -10,7 +10,7 @@ int step_to_converge = 0;
 int main() {
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("testSeedWithoutReplay_steps_episodes2", "w");
+	testSeed = fopen("Seed_With_Replay_thetaconv", "w+");
 	printf("test seed = %d\n", testSeed);
 	for(it = 0; it < 50; it++){
 		srand(it);
