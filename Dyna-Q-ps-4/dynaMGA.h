@@ -9,8 +9,8 @@
 #define NB_STEPS 2 // 10
 #define NB_EPISODES 100000 // 1 0000
 #define REPLAY 1
-//#define THETA_CONV_VERIF
-#define POLICY_VERIF
+#define THETA_CONV_VERIF
+//#define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
@@ -46,7 +46,7 @@
 #define ALPHA 	0.3
 #define GAMMA 	0.7
 #define TAU 	1
-#define THETA_CONV  0.00002
+#define THETA_CONV  0.000002
 #define EPSILON 0.06
 #define HAVE_REALLY_CONV 10
 

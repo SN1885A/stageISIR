@@ -12,7 +12,7 @@ int main() {
 	FILE *testSeed = NULL;
 	testSeed = fopen("testSeedWithoutReplay_steps_episodes2", "w");
 	printf("test seed = %d\n", testSeed);
-	for(it = 61; it < 80; it++){
+	for(it = 0; it < 50; it++){
 		srand(it);
 
 		printf("Seed = %d\n", it);
