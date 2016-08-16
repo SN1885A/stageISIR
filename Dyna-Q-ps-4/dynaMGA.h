@@ -9,17 +9,18 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000 // 1 0000
-#define REPLAY 1
+//#define REPLAY 1
+//#define WFILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 5 //5
+#define GRID_SIZE 5
 
 //State vector
-#define PHI_SIZE 25//25 //5*5
+#define PHI_SIZE 25
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
