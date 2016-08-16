@@ -131,8 +131,7 @@ void multMatrixCarreCol(double* result, double*** mat1, double* mat2,
 		int action) {
 
 	int i, j;
-	memset(result, 0, PHI_SIZE * sizeof(double));
-	//for(i = 0; i<PHI_SIZE; i++) result[i] = 0;
+	for(i = 0; i<PHI_SIZE; i++) result[i] = 0;
 	for (i = 0; i < PHI_SIZE; i++)
 		for (j = 0; j < PHI_SIZE; j++)
 			result[i] += mat1[action][i][j] * mat2[j];
@@ -191,7 +190,7 @@ void multiplicationVectorScalar(double* result, double* mat, double lambda) {
 	}
 }
 
-void additionVector(double* result, double* mat1, double* mat2) {
+void additionVector(double* mat1, double* mat2) {
 
 	int i;
 	for (i = 0; i < PHI_SIZE; i++) {
@@ -208,7 +207,6 @@ void additionVector2(double** mat1, double* mat2, int action) {
 }
 
 void soustractionVector(double* result, double* mat1, double* mat2) {
-	//memset(result , 0 ,PHI_SIZE * sizeof(double) );
 	int i;
 	for (i = 0; i < PHI_SIZE; i++) {
 		result[i] = mat1[i] - mat2[i];
@@ -311,25 +309,21 @@ void normalize(double phi[PHI_SIZE]) {
 	}
 }
 
-void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
-		int* step_to_converge) {
+void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge) {
 
 	//Declarations
 	PQueue pQueue;
-	PQueueE pQueueE2;
-	int i, j, e, a, pas, cpt, cptStop = 0, test = 0,
-			step_to_converge_per_episode = 0;
+	PQueueE pQueueE2, pQueueE, head;
+	int i, j, e, a, pas, cpt, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0;
 	double delta, r, priority, R = 0;
-	//replace Antoine
+
 	double* phi1 = (double*) malloc(PHI_SIZE * sizeof(double));
 	double* phi2 = (double*) malloc(PHI_SIZE * sizeof(double));
 	double* AlphaDeltaPhi1 = (double*) malloc(PHI_SIZE * sizeof(double));
 	double* oldTheta = (double*) malloc(PHI_SIZE * sizeof(double));
-	//memset(phi1 , 0 , PHI_SIZE * sizeof(double));
-	//memset(phi2 , 0 , PHI_SIZE * sizeof(double));
-	//memset(AlphaDeltaPhi1 , 0 , PHI_SIZE * sizeof(double));
+
 	pQueue = createPQueue();
 
 	double* resultTmp1 = (double*) calloc(PHI_SIZE, sizeof(double));
@@ -351,11 +345,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 		if(e%100 == 0)
 		printf("Episode n°%d\n", e);
 
-
 		cpt = 0;
-
-		//replace Antoine
-//		memcpy(oldTheta , theta , PHI_SIZE * sizeof(double));
 
 		for (i = 0; i < PHI_SIZE; i++)
 			oldTheta[i] = theta[i];
@@ -376,9 +366,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 		do {
 
 			(*step_to_converge)++;
-//			if (*step_to_converge == 15181) {
-//				printf("IICCCII\n");
-//			}
+
 //			printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
 
@@ -438,12 +426,11 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 			generateVect(phi2, Xnext, Ynext);
 
 			//delta updating
-			delta = r + GAMMA * multVectorOneValue(theta, phi2)
-					- multVectorOneValue(theta, phi1);
+			delta = r + (GAMMA * multVectorOneValue(theta, phi2)) - multVectorOneValue(theta, phi1);
 
 			//theta updating
 			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, (ALPHA * delta));
-			additionVector(theta, theta, AlphaDeltaPhi1);
+			additionVector(theta, AlphaDeltaPhi1);
 
 			//F updating
 
@@ -461,16 +448,16 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 			additionVector2(b, vectTmp, A);		//b <- b + alpha*(r - (b)T*phi)
 
 #ifdef REPLAY
+			int m;
+			for(m=0; m<PHI_SIZE; m++) {
+				if(phi1[m] != 0) { //or threshold
+					priority = fabs(delta*phi1[m]);
 
-			for(i=0; i<PHI_SIZE; i++) {
-				if(phi1[i] != 0) { //or threshold
-					priority = fabs(delta*phi1[i]);
-					PQueueE pQueueE;
 					pQueueE.priority = priority;
-					pQueueE.i = i;
+					pQueueE.i = m;
 
 					if(priority != 0 && priority < DBL_MAX)
-					pQueue = addElement(pQueue, pQueueE);
+						pQueue = addElement(pQueue, pQueueE);
 				}
 			}
 
@@ -480,15 +467,16 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 
 				if(p == NB_STEPS) break;
 
-				PQueueE head = headP(pQueue);
+				head = headP(pQueue);
+				int indice = head.i;
 				pQueue = deleteHead(pQueue);
 
-				int indice = head.i;
 				double resultTmp5[PHI_SIZE], tmp2;
 				int exist = 0;
 
 				for(j=0; j<PHI_SIZE; j++) {
 					for(a = 0; a<NB_ACTIONS; a++) {
+						//printf("indice = %d\n", indice);
 						if(F[a][indice][j] != 0) exist = 1;
 					}
 
@@ -531,13 +519,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 
 		} while (cpt != 2);
 
-		double diff, diffMax = 0;
-		for (i = 0; i < PHI_SIZE; i++) {
-			diff = fabsf(oldTheta[i] - theta[i]);
-			if (diffMax < diff)
-				diffMax = diff;
-		}
-
 #ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
 		if (verif == 0) {
@@ -547,6 +528,13 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 #endif
 
 #ifdef THETA_CONV_VERIF
+		double diff, diffMax = 0;
+		for (i = 0; i < PHI_SIZE; i++) {
+			diff = fabsf(oldTheta[i] - theta[i]);
+			if (diffMax < diff)
+				diffMax = diff;
+		}
+		//printf("diffmax = %f\n", diffMax);
 		if(diffMax < THETA_CONV) {
 			cptStop++;
 		}
@@ -569,10 +557,8 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 #endif
 
 		step_to_converge_per_episode = 0;
-
-
-
 	}
+
 	//libéréée ... délivréée
 	freeMatrix(resultTmp4, PHI_SIZE, PHI_SIZE);
 	free(resultTmp1);
@@ -582,6 +568,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 	free(AlphaDeltaPhi1);
 	free(oldTheta);
 	suppPQueue(pQueue);
+
 }
 
 int verifPolicy(double* theta, double** b, double*** F) {

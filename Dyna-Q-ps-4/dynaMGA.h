@@ -8,19 +8,19 @@
 
 //Experimentation definition
 #define NB_STEPS 5 // 10
-#define NB_EPISODES 100000 // 1 0000
+#define NB_EPISODES 100000000000000000 // 1 000 000
 //#define REPLAY 1
-//#define WFILE 1
+#define WFILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 5
+#define GRID_SIZE 10
 
 //State vector
-#define PHI_SIZE 25
+#define PHI_SIZE 100
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -48,9 +48,9 @@
 #define ALPHA 	0.3
 #define GAMMA 	0.7
 #define TAU 	1
-#define THETA_CONV  0.00002
+#define THETA_CONV  0.0000000000002
 #define EPSILON 0.06
-#define HAVE_REALLY_CONV 10
+#define HAVE_REALLY_CONV 20
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
@@ -91,7 +91,7 @@ void multMatrixLCarre(double* result, double* mat1, double*** mat2, int action);
 
 void multMatrixColL(double** result, double* mat1, double* mat2);
 
-void additionVector(double* result, double* mat1, double* mat2);
+void additionVector(double* mat1, double* mat2);
 
 void additionVector2(double** mat1, double* mat2, int action);
 
