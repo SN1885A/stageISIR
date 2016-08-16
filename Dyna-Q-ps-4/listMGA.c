@@ -117,7 +117,8 @@ ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, i
 			(*size)++;
 		}
 		else{
-			list = NULL;
+			suppListMaxAction(list);
+			list=NULL;
 			list = addElementListQueue(list, a, value);
 			(*size) = 1;
 		}

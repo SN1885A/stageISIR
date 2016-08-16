@@ -12,14 +12,14 @@
 #define REPLAY 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
-#define DEBUG 1
+//#define DEBUG 1
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 10 //5
+#define GRID_SIZE 5 //5
 
 //State vector
-#define PHI_SIZE 100//25 //5*5
+#define PHI_SIZE 25//25 //5*5
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case

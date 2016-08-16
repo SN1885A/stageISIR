@@ -17,9 +17,9 @@ int main() {
 
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedWithReplay_policyverif", "w+");
+	testSeed = fopen("SeedWithReplay_policyverif", "w");
 
-	for(it = 0; it < 100; it++){
+	for(it = 0; it < 50; it++){
 
 		srand(it);
 
@@ -46,7 +46,7 @@ int main() {
 		printf("\nSTART Dyna-Q-MG\n\n");
 dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge);
 	
-		//displayGridDirections(theta, b, F);
+		displayGridDirections(theta, b, F);
 		//printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
 free(theta);
 freeMatrix(b , NB_ACTIONS , PHI_SIZE);

@@ -25,7 +25,6 @@ int bestAction(double* phi, double* theta, double** b, double*** F) {
 
 		if (result >= best) {
 			best = result;
-			action = a;
 			listMaxAction = addElementListMaxAction(listMaxAction, a, best,
 					&size);
 
@@ -349,11 +348,14 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 
 	for (e = 0; e < NB_EPISODES; e++) {
 
+		if(e%100 == 0)
 		printf("Episode n°%d\n", e);
+
+
 		cpt = 0;
 
 		//replace Antoine
-		//memcpy(oldTheta , theta , PHI_SIZE * sizeof(double));
+//		memcpy(oldTheta , theta , PHI_SIZE * sizeof(double));
 
 		for (i = 0; i < PHI_SIZE; i++)
 			oldTheta[i] = theta[i];
@@ -374,10 +376,10 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge,
 		do {
 
 			(*step_to_converge)++;
-			if (*step_to_converge == 15181) {
-				printf("IICCCII\n");
-			}
-			printf("Step to converge = %d\n", *step_to_converge);
+//			if (*step_to_converge == 15181) {
+//				printf("IICCCII\n");
+//			}
+//			printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
 
 			if (cpt == 1)
@@ -680,7 +682,7 @@ void displayGridDirections(double* theta, double** b, double*** F) {
 			else {
 				generateVect(phi, i, j);
 				action = bestAction(phi, theta, b, F);
-				free(phi);
+
 				//Policy verif
 				if (i == RWX && j != RWY) {
 					if (j < RWY) {
@@ -743,4 +745,5 @@ void displayGridDirections(double* theta, double** b, double*** F) {
 	}
 	printf("\n");
 	printf("Policy error percent = %d\n", wrong);
+	free(phi);
 }
