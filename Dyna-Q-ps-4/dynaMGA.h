@@ -9,7 +9,7 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000000000000 // 1 000 000
-//#define REPLAY 1
+#define REPLAY 1
 #define WFILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
@@ -17,10 +17,10 @@
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 10
+#define GRID_SIZE 5
 
 //State vector
-#define PHI_SIZE 100
+#define PHI_SIZE 25
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -31,8 +31,8 @@
 #define REWARD_VALUE 0.2
 
 //Rewards' position
-#define RWX 3
-#define RWY 3
+#define RWX 0
+#define RWY 0
 
 //When you get a reward you get back to...
 #define RX 4

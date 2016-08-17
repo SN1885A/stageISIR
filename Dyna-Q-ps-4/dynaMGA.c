@@ -119,6 +119,7 @@ int e_greedy(int x, int y, double* phi, double* theta, float e, double** b,
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
 	//if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
+
 	if ((x == RWX && y == RWY) || (r < e))
 		a = rand() % NB_ACTIONS;
 	else
@@ -317,7 +318,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 	int i, j, e, a, pas, cpt, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0;
-	double delta, r, priority, R = 0;
+	double delta, r, priority, R = 0, alpdelta;
 
 	double* phi1 = (double*) malloc(PHI_SIZE * sizeof(double));
 	double* phi2 = (double*) malloc(PHI_SIZE * sizeof(double));
@@ -341,7 +342,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 #endif
 
 	for (e = 0; e < NB_EPISODES; e++) {
-
+		pQueue = createPQueue();
 		if(e%100 == 0)
 		printf("Episode n°%d\n", e);
 
@@ -427,9 +428,10 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			//delta updating
 			delta = r + (GAMMA * multVectorOneValue(theta, phi2)) - multVectorOneValue(theta, phi1);
-
+			//printf("delta = %f\n", delta);
 			//theta updating
-			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, (ALPHA * delta));
+			alpdelta = ALPHA * delta;
+			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, alpdelta);
 			additionVector(theta, AlphaDeltaPhi1);
 
 			//F updating
@@ -557,6 +559,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 #endif
 
 		step_to_converge_per_episode = 0;
+		suppPQueue(pQueue);
 	}
 
 	//libéréée ... délivréée

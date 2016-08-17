@@ -16,7 +16,7 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedWithoutReplay_policyverif100", "w");
+	testSeed = fopen("test", "w");
 
 	for(it = 0; it < 50; it++){
 
@@ -25,7 +25,7 @@ int main() {
 #endif
 		int i, j, a;
 #ifndef WFILE
-		srand(23);
+		srand(49);
 #endif
 		theta = (double*) calloc(PHI_SIZE , sizeof(double));
 		b = initMatrix(NB_ACTIONS , PHI_SIZE);
