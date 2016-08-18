@@ -65,13 +65,14 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 
  ListIndAction list = NULL;
  int a = 0, i;
- double tabValue[NB_ACTIONS], op1, op2, result, sum = 0, r;
+ double op1, op2, result, sum = 0, r;
  double* tmp = (double*) malloc(PHI_SIZE * sizeof(double));
+ double* tabValue = (double*) malloc(NB_ACTIONS * sizeof(double));
 
- if(x==RWX && y==RWY)
+ /*if(x==RWX && y==RWY)
 	 a = rand()%NB_ACTIONS;
 
- else{
+ else{*/
 	 //Compute e(Q(a)*BETA)
 	 for(i = 0; i < NB_ACTIONS; i++){
 		 op1 = multVectorOneValue2(b, phi, i);
@@ -104,10 +105,11 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 		 a = list->next->next->next->action;
 	 }
 
- }
+ //}
 
  suppLIA(list);
  free(tmp);
+ free(tabValue);
 // printf("a = %d\n", a);
 
  return a;
@@ -340,7 +342,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 	for (e = 0; e < NB_EPISODES; e++) {
 		pQueue = createPQueue();
-		if(e%100 == 0)
+		//if(e%100 == 0)
 		printf("Episode n°%d\n", e);
 
 		cpt = 0;

@@ -16,7 +16,7 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedWithReplay_5x5_softmax", "w");
+	testSeed = fopen("SeedWithReplay_10x10_softmax", "w");
 
 	for(it = 0; it < 50; it++){
 
@@ -25,7 +25,7 @@ int main() {
 #endif
 		int i, j, a;
 #ifndef WFILE
-		srand(6);
+		srand(26);
 #endif
 		theta = (double*) calloc(PHI_SIZE , sizeof(double));
 		b = initMatrix(NB_ACTIONS , PHI_SIZE);
