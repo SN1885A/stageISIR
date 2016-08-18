@@ -11,8 +11,8 @@
 #define NB_EPISODES 100000000000000000 // 1 000 000
 #define REPLAY 1
 #define WFILE 1
-//#define THETA_CONV_VERIF
-#define POLICY_VERIF
+#define THETA_CONV_VERIF
+//#define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition

@@ -16,7 +16,7 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("test", "w");
+	testSeed = fopen("SeedReplay_conv", "w");
 
 	for(it = 0; it < 50; it++){
 
