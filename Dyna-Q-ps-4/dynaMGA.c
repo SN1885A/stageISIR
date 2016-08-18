@@ -310,7 +310,7 @@ void normalize(double phi[PHI_SIZE]) {
 	}
 }
 
-void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge) {
+void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge, int testSeed) {
 
 	//Declarations
 	PQueue pQueue;
@@ -332,12 +332,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 	double** resultTmp4 = initMatrix(PHI_SIZE, PHI_SIZE);
 
 #ifdef DEBUG
-	FILE *fileStep2ConvPerEpisode = NULL;
-	fileStep2ConvPerEpisode = fopen("fileStep2ConvPerEpisode.txt", "w+");
-
-	FILE *fileTimeReward = NULL;
-	fileTimeReward = fopen("rewardTime.txt", "w+");
-
 	struct timeval start, end;
 #endif
 
@@ -428,7 +422,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			//delta updating
 			delta = r + (GAMMA * multVectorOneValue(theta, phi2)) - multVectorOneValue(theta, phi1);
-			//printf("delta = %f\n", delta);
+
 			//theta updating
 			alpdelta = ALPHA * delta;
 			multiplicationVectorScalar(AlphaDeltaPhi1, phi1, alpdelta);
@@ -437,17 +431,17 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			//F updating
 
 			multMatrixCarreCol(resultTmp1, F, phi1, A);			        //F*phi
-			soustractionVector(resultTmp2, phi2, resultTmp1);		//phi'-F*phi
-			multiplicationVectorScalar(resultTmp1, resultTmp2, ALPHA);//alpha*(phi'-F*phi)
-			multMatrixColL(resultTmp4, resultTmp1, phi1);//alpha*(phi'-F*phi)*(phi)T
-			additionMatrix(F, resultTmp4, A);//F <- F + alpha*(phi'-F*phi)*(phi)T
+			soustractionVector(resultTmp2, phi2, resultTmp1);			//phi'-F*phi
+			multiplicationVectorScalar(resultTmp1, resultTmp2, ALPHA);	//alpha*(phi'-F*phi)
+			multMatrixColL(resultTmp4, resultTmp1, phi1);				//alpha*(phi'-F*phi)*(phi)T
+			additionMatrix(F, resultTmp4, A);							//F <- F + alpha*(phi'-F*phi)*(phi)T
 
 			//b updating
 			double tmp = multVectorOneValue2(b, phi1, A); 			//(b)T*phi
-			double lambda = ALPHA * (r - tmp);			//alpha*(r - (b)T*phi)
+			double lambda = ALPHA * (r - tmp);						//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
-			multiplicationVectorScalar(vectTmp, phi1, lambda);//alpha*(r - (b)T*phi)*phi
-			additionVector2(b, vectTmp, A);		//b <- b + alpha*(r - (b)T*phi)
+			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
+			additionVector2(b, vectTmp, A);							//b <- b + alpha*(r - (b)T*phi)
 
 #ifdef REPLAY
 			int m;
@@ -478,7 +472,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 				for(j=0; j<PHI_SIZE; j++) {
 					for(a = 0; a<NB_ACTIONS; a++) {
-						//printf("indice = %d\n", indice);
 						if(F[a][indice][j] != 0) exist = 1;
 					}
 
@@ -536,7 +529,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			if (diffMax < diff)
 				diffMax = diff;
 		}
-		//printf("diffmax = %f\n", diffMax);
+
 		if(diffMax < THETA_CONV) {
 			cptStop++;
 		}
@@ -550,16 +543,14 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		(*episode_to_converge) = e;
 
 #ifdef DEBUG
-		fprintf(fileStep2ConvPerEpisode, "%d;%d\n", e,
-				step_to_converge_per_episode);
-#ifdef WHILE
 		gettimeofday(&end, NULL);
 		fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
 #endif
-#endif
 
+		fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
 		step_to_converge_per_episode = 0;
-		suppPQueue(pQueue);
+
+		//suppPQueue(pQueue);
 	}
 
 	//libéréée ... délivréée
