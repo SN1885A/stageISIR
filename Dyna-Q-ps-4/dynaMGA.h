@@ -9,10 +9,10 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000000000000 // 1 000 000
-#define REPLAY 1
-#define WFILE 1
-#define THETA_CONV_VERIF
-//#define POLICY_VERIF
+//#define REPLAY 1
+//#define WFILE 1
+//#define THETA_CONV_VERIF
+#define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
@@ -63,8 +63,8 @@ int bestAction(double* phi, double* theta, double** b, double*** F);
 int e_greedy(int x, int y, double* phi, double* theta, float e, double** b, double*** F);
 
 //Dyna-MG function 
-//void dyna_MG(double theta[PHI_SIZE], double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE], int* episode_to_converge, int* step_to_converge);
-void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge);
+
+void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge, int testSeed);
 
 double generateGaussian(int var, int ectype, double d);
 

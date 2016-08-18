@@ -547,7 +547,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
 #endif
 
-		fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
+		//fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
 		step_to_converge_per_episode = 0;
 
 		//suppPQueue(pQueue);

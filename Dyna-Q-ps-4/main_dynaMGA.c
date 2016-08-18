@@ -16,16 +16,16 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedReplay_conv", "w");
+	testSeed = fopen("SeedWithoutReplay_step2convPerEpisode", "w");
 
-	for(it = 0; it < 50; it++){
+	for(it = 0; it < 10; it++){
 
 		srand(it);
 		printf("Seed = %d\n", it);
 #endif
 		int i, j, a;
 #ifndef WFILE
-		srand(49);
+		srand(4);
 #endif
 		theta = (double*) calloc(PHI_SIZE , sizeof(double));
 		b = initMatrix(NB_ACTIONS , PHI_SIZE);
@@ -33,7 +33,7 @@ int main() {
 
 		printf("\nSTART Dyna-Q-MG\n\n");
 
-		dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge);
+		dyna_MG(theta, b, F, &episode_to_converge, &step_to_converge, 0);
 		displayGridDirections(theta, b, F);
 		printf("Convergence speed (episode) : %d  -------------  steps : %d\n", episode_to_converge, step_to_converge);
 
@@ -44,7 +44,7 @@ int main() {
 		printf("\nEND Dyna-Q-MG\n\n\n");
 
 #ifdef WFILE
-	    fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
+	    //fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
 	    fflush(testSeed);
 
 	    step_to_converge = 0;
