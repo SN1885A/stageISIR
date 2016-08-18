@@ -16,16 +16,16 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedWithoutReplay_step2convPerEpisode", "w");
+	testSeed = fopen("SeedWithReplay_5x5_softmax", "w");
 
-	for(it = 0; it < 10; it++){
+	for(it = 0; it < 50; it++){
 
 		srand(it);
 		printf("Seed = %d\n", it);
 #endif
 		int i, j, a;
 #ifndef WFILE
-		srand(4);
+		srand(6);
 #endif
 		theta = (double*) calloc(PHI_SIZE , sizeof(double));
 		b = initMatrix(NB_ACTIONS , PHI_SIZE);
@@ -44,7 +44,7 @@ int main() {
 		printf("\nEND Dyna-Q-MG\n\n\n");
 
 #ifdef WFILE
-	    //fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
+	    fprintf(testSeed, "%d;%d;%d;\n", it, step_to_converge,  episode_to_converge);
 	    fflush(testSeed);
 
 	    step_to_converge = 0;

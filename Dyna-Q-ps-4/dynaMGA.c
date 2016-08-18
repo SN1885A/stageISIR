@@ -37,11 +37,10 @@ int bestAction(double* phi, double* theta, double** b, double*** F) {
 	return action;
 }
 
-ListMaxAction bestActionForVerifPolicy(double* phi, double *theta, double** b,
-		double*** F) {
+ListMaxAction bestActionForVerifPolicy(double* phi, double *theta, double** b, double*** F) {
 	double best = -DBL_MAX, result, op1, op2;
 	int a, action = 0, size = 0;
-	double tmp[PHI_SIZE];
+	double* tmp = (double*) malloc(PHI_SIZE * sizeof(double));
 	ListMaxAction listMaxAction = NULL;
 
 	for (a = 0; a < NB_ACTIONS; a++) {
@@ -62,53 +61,57 @@ ListMaxAction bestActionForVerifPolicy(double* phi, double *theta, double** b,
 	return listMaxAction;
 }
 
-/*int softmax(int x, int y, double phi[PHI_SIZE], double theta[PHI_SIZE], float e, double b[NB_ACTIONS][PHI_SIZE], double F[NB_ACTIONS][PHI_SIZE][PHI_SIZE]){
+int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 
  ListIndAction list = NULL;
- int a = 2, i;
+ int a = 0, i;
  double tabValue[NB_ACTIONS], op1, op2, result, sum = 0, r;
- double tmp[PHI_SIZE];
+ double* tmp = (double*) malloc(PHI_SIZE * sizeof(double));
 
- if(x==RWX && y==RWY){
- a = rand()%NB_ACTIONS;
- }
+ if(x==RWX && y==RWY)
+	 a = rand()%NB_ACTIONS;
 
  else{
+	 //Compute e(Q(a)*BETA)
+	 for(i = 0; i < NB_ACTIONS; i++){
+		 op1 = multVectorOneValue2(b, phi, i);
+		 multMatrixLCarre(tmp, theta, F, i);
+		 op2 = GAMMA*multVectorOneValue(tmp, phi);
+		 tabValue[i] = exp((op1 + op2)*BETA);
+	 }
 
- for(i = 0; i < NB_ACTIONS; i++){
- op1 = multVectorOneValue2(b, phi, a);
- multMatrixLCarre(tmp, theta, F, a);
- op2 = GAMMA*multVectorOneValue(tmp, phi);
- tabValue[i] = op1 + op2;
- sum += tabValue[i];
+	 for(i = 0; i<NB_ACTIONS; i++){
+		 sum += tabValue[i];
+	 }
+
+	 for(i = 0; i < NB_ACTIONS; i++){
+		 result = tabValue[i]/sum;
+		 list = addElementLIA(list, i, result);
+	 }
+
+	 r = (double)rand()/RAND_MAX;
+
+	 if(0 <= r && r < list->prob){
+		 a = list->action;
+	 }
+	 else if(list->prob <= r && r < list->next->prob){
+		 a = list->next->action;
+	 }
+	  else if(list->next->prob <= r && r < list->next->next->prob){
+		 a = list->next->next->action;
+	 }
+	 else{
+		 a = list->next->next->next->action;
+	 }
 
  }
 
- for(i = 0; i < NB_ACTIONS; i++){
- result = exp(tabValue[i]/TAU)/exp(sum/TAU);
- list = addElementLIA(list, i, result);
- }
+ suppLIA(list);
+ free(tmp);
+// printf("a = %d\n", a);
 
- r = (double)rand()/RAND_MAX;
-
- if(0 <= r && r < list->prob){
- a = list->action;
- }
- else if(list->prob <= r && r < list->next->prob){
- a = list->next->action;
- }
- else if(list->next->prob <= r && r < list->next->next->prob){
- a = list->next->next->action;
- }
- else{
- a = list->next->next->next->action;
- }
-
- }
-
- printf("a = %d\n", a);
  return a;
- }*/
+ }
 
 int e_greedy(int x, int y, double* phi, double* theta, float e, double** b,
 		double*** F) {
@@ -373,8 +376,8 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Ynext = Y;
 
 			//Select an action
-			A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
-			//A = softmax(X, Y, phi1, theta, EPSILON, b, F);
+			//A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
+			A = softmax(X, Y, phi1, theta, b, F);
 
 			//reward
 			r = 0;

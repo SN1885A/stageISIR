@@ -9,8 +9,8 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000000000000 // 1 000 000
-//#define REPLAY 1
-//#define WFILE 1
+#define REPLAY 1
+#define WFILE 1
 //#define THETA_CONV_VERIF
 #define POLICY_VERIF
 //#define DEBUG 1
@@ -47,7 +47,7 @@
 //All constants
 #define ALPHA 	0.3
 #define GAMMA 	0.7
-#define TAU 	1
+#define BETA 	2
 #define THETA_CONV  0.0000000000002
 #define EPSILON 0.06
 #define HAVE_REALLY_CONV 20
@@ -57,10 +57,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Choose the best action from a given state
-int bestAction(double* phi, double* theta, double** b, double*** F);
 
 //Select an action with a e-greedy policy
 int e_greedy(int x, int y, double* phi, double* theta, float e, double** b, double*** F);
+int softmax(int x, int y, double* phi, double* theta, double** b, double*** F);
 
 //Dyna-MG function 
 

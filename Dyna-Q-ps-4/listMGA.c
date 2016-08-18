@@ -173,7 +173,7 @@ ListIndAction addHeadLIA(ListIndAction L, int action, double prob){
 	newList->action = action;
 	newList->next = L;
 
-return L;
+return newList;
 }
 
 ListIndAction addQueueLIA(ListIndAction L, int action, double prob){
@@ -197,7 +197,7 @@ ListIndAction addElementLIA(ListIndAction L, int action, double prob){
 		if(L->prob < prob)
 			L = addHeadLIA(L, action, prob);
 		else
-				L->next = addElementLIA(L->next, action, prob);
+			L->next = addElementLIA(L->next, action, prob);
 	}
 	else
 		L = addQueueLIA(L, action, prob);
@@ -205,18 +205,13 @@ ListIndAction addElementLIA(ListIndAction L, int action, double prob){
 return L;
 }
 
-void displayLIA(PQueue P){
-	PQueue tmp = P;
-	if(emptyP(P)) printf("PQueue is empty");
-	else{
 
-		while(tmp != NULL){
-			printf("indice = %d priority = %f\n", tmp->element.i, tmp->element.priority);
-			if(tmp->next != NULL) tmp = tmp->next;
-			else break;
-		}
+void suppLIA(ListIndAction L){
+	while(L != NULL){
+		ListIndAction tmp = L->next;
+		free(L);
+		L = tmp;
 	}
-	printf("\n");
 }
 
 

@@ -54,6 +54,5 @@ ListMaxAction deleteHeadListMaxAction(ListMaxAction P);
 ListIndAction addHeadLIA(ListIndAction L, int action, double prob);
 ListIndAction addQueueLIA(ListIndAction L, int action, double prob);
 ListIndAction addElementLIA(ListIndAction L, int action, double prob);
-
-
+void suppLIA(ListIndAction L);
 
