@@ -214,5 +214,76 @@ void suppLIA(ListIndAction L){
 	}
 }
 
+ListIndAction findSameProbLIA(ListIndAction L, double prob, int*size){
+
+	ListIndAction tmp = L;
+	ListIndAction rL = NULL;
+
+	while(tmp != NULL){
+
+		if(tmp->prob == prob){
+			rL = addElementLIA(rL, tmp->action, prob);
+			(*size)++;
+		}
+
+		if(tmp->next != NULL) tmp = tmp->next;
+		else break;
+	}
+
+	//suppLIA(tmp);
+
+	return rL;
+}
+
+int listActionRandomLIA(ListIndAction list, int size){
+
+	int a;
+	ListIndAction tmp = list;
+
+	int r = rand()%size;
+	int cpt = 0;
+
+	while(r != cpt){
+		tmp = tmp->next;
+		cpt++;
+	}
+	a = tmp->action;
+
+return a;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

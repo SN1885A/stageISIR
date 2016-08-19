@@ -55,4 +55,5 @@ ListIndAction addHeadLIA(ListIndAction L, int action, double prob);
 ListIndAction addQueueLIA(ListIndAction L, int action, double prob);
 ListIndAction addElementLIA(ListIndAction L, int action, double prob);
 void suppLIA(ListIndAction L);
-
+ListIndAction findSameProbLIA(ListIndAction L, double prob, int*size);
+int listActionRandomLIA(ListIndAction list, int size);

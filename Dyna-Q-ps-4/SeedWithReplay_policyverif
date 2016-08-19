@@ -5,7 +5,7 @@
 %#define REWARD_VALUE 0.2
 %#define DISTANCE 10 
 %#define ECTYPE 30   
-%#define	VAR 0
+%#define VAR 0
 %vect avec 1 val à 1
 %#define RWX 3
 %#define RWY 3
