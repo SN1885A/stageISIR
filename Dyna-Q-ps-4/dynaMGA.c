@@ -164,7 +164,6 @@ int e_greedy(int x, int y, double* phi, double* theta, float e, double** b,
 	//e-greegy:
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
-	//if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
 
 	if ((x == RWX && y == RWY) || (r < e))
 		a = rand() % NB_ACTIONS;
@@ -343,19 +342,6 @@ void generateVect(double* phi, int X, int Y) {
 	phi[ind] = 1;
 }
 
-void normalize(double phi[PHI_SIZE]) {
-
-	int i;
-	double max = -DBL_MAX;
-	for (i = 0; i < PHI_SIZE; i++) {
-		if (fabs(phi[i]) > max)
-			max = fabs(phi[i]);
-	}
-	for (i = 0; i < PHI_SIZE; i++) {
-		phi[i] /= max;
-	}
-}
-
 void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge, int testSeed) {
 
 	//Declarations
@@ -408,10 +394,10 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			(*step_to_converge)++;
 
-//			printf("Step to converge = %d\n", *step_to_converge);
+			//printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
 
-		//	if (cpt == 1)
+			//if (cpt == 1)
 			//	cpt++;
 
 			//next real state
@@ -457,8 +443,12 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			if ((Xnext == RWX) && (Ynext == RWY)) {
 				r = REWARD_VALUE;
+				//cpt++;
+			}
+			if ((X == RWX) && (Y == RWY)) {
 				cpt++;
 			}
+
 
 			R += r;
 			generateVect(phi2, Xnext, Ynext);
@@ -479,11 +469,11 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			additionMatrix(F, resultTmp4, A);							//F <- F + alpha*(phi'-F*phi)*(phi)T
 
 			//b updating
-			double tmp = multVectorOneValue2(b, phi1, A); 			//(b)T*phi
-			double lambda = ALPHA * (r - tmp);						//alpha*(r - (b)T*phi)
+			double tmp = multVectorOneValue2(b, phi1, A); 				//(b)T*phi
+			double lambda = ALPHA * (r - tmp);							//alpha*(r - (b)T*phi)
 			double vectTmp[PHI_SIZE];
-			multiplicationVectorScalar(vectTmp, phi1, lambda);		//alpha*(r - (b)T*phi)*phi
-			additionVector2(b, vectTmp, A);							//b <- b + alpha*(r - (b)T*phi)
+			multiplicationVectorScalar(vectTmp, phi1, lambda);			//alpha*(r - (b)T*phi)*phi
+			additionVector2(b, vectTmp, A);								//b <- b + alpha*(r - (b)T*phi)
 
 #ifdef REPLAY
 			int m;
@@ -554,7 +544,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Y = Ynext;
 			generateVect(phi1, X, Y);
 
-		} while (cpt != 1);
+		} while (cpt != 2);
 
 #ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
@@ -568,10 +558,12 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		double diff, diffMax = 0;
 		for (i = 0; i < PHI_SIZE; i++) {
 			diff = fabsf(oldTheta[i] - theta[i]);
+
 			if (diffMax < diff)
 				diffMax = diff;
-		}
 
+		}
+		//fprintf(testSeed, "%d;%f\n", e, diffMax);
 		if(diffMax < THETA_CONV) {
 			cptStop++;
 		}

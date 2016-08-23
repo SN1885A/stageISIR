@@ -8,11 +8,11 @@
 
 //Experimentation definition
 #define NB_STEPS 5 // 10
-#define NB_EPISODES 100000000 // 1 000 000
-#define REPLAY 1
-#define WFILE 1
-//#define THETA_CONV_VERIF
-#define POLICY_VERIF
+#define NB_EPISODES 100000000 // 100 000 000
+//#define REPLAY 1
+//#define WFILE 1
+#define THETA_CONV_VERIF
+//#define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
@@ -48,9 +48,9 @@
 #define ALPHA 	0.3
 #define GAMMA 	0.7
 #define BETA 	2
-#define THETA_CONV  0.0000000000000002
+#define THETA_CONV  0.01
 #define EPSILON 0.06
-#define HAVE_REALLY_CONV 20
+#define HAVE_REALLY_CONV 10
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Engine
@@ -69,8 +69,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 double generateGaussian(int var, int ectype, double d);
 
 void generateVect(double* phi, int X, int Y);
-
-void normalize(double phi[PHI_SIZE]);
 
 int verifPolicy(double* theta, double** b, double*** F);
 
