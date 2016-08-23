@@ -66,13 +66,14 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
  ListIndAction list = NULL, subList1 = NULL, subList2 = NULL, subList3 = NULL, subList4 = NULL;
  int a = 2, i, size1 = 0, size2 = 0, size3 = 0, size4 = 0;
  double op1, op2, result, sum = 0, r;
- double* tmp = (double*) malloc(PHI_SIZE * sizeof(double));
+ double* tmp = (double*) calloc(PHI_SIZE, sizeof(double));
  double* tabValue = (double*) malloc(NB_ACTIONS * sizeof(double));
 
- /*if(x==RWX && y==RWY)
+ if(x==RWX && y==RWY)
 	 a = rand()%NB_ACTIONS;
 
- else{*/
+ else{
+
 	 //Compute e(Q(a)*BETA)
 	 for(i = 0; i < NB_ACTIONS; i++){
 		 op1 = multVectorOneValue2(b, phi, i);
@@ -114,7 +115,7 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 		 else
 			 a = list->next->action;
 	 }
-	 else if(list->next->prob < r && r <= sum2){
+	 else if(sum1 < r && r <= sum2){
 
 		 subList3 = findSameProbLIA(list, list->prob, &size3);
 		 if(size3 != 0){
@@ -123,7 +124,7 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 		 else
 			 a = list->next->next->action;
 	 }
-	 else if(list->next->next->prob < r && r <= sum3){
+	 else if(sum2 < r && r <= sum3){
 		subList4 = findSameProbLIA(list , list->prob, &size4);
 		 if(size4 != 0){
 			 a = listActionRandomLIA(subList4, size4);
@@ -132,16 +133,14 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 			 a = list->next->next->next->action;
 	 }
 
-	/* printf("list->prob = %f\n", list->prob);
-	 printf("sum1 %f\n", sum1);
-	 printf("sum2 = %f\n",sum2);
-	 printf("sum3 = %f\n",sum3);
+/*	 printf("prob0 = %f action = %d\n", list->prob, list->action);
+	 printf("prob1 = %f action = %d\n", list->next->prob, list->next->action);
+	 printf("prob3 = %f action = %d\n", list->next->next->prob, list->next->next->action);
+	 printf("prob4 = %f action = %d\n", list->next->next->next->prob, list->next->next->next->action);
 
-	 printf("r = %f\n", r);
-	 printf("a = %d\n", a);*/
+	 printf("a = %d\n\n", a);*/
 
-
- //}
+ }
 
  suppLIA(subList1);
  suppLIA(subList2);
@@ -409,8 +408,8 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 //			printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
 
-			if (cpt == 1)
-				cpt++;
+		//	if (cpt == 1)
+			//	cpt++;
 
 			//next real state
 			Xnext = X;
@@ -418,8 +417,8 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			//Select an action
 			//A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
-			A = softmax(X, Y, phi1, theta, b, F);
-			//A = rand()%4;
+			//A = softmax(X, Y, phi1, theta, b, F);
+			A = rand()%4;
 
 			//reward
 			r = 0;
@@ -556,7 +555,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Y = Ynext;
 			generateVect(phi1, X, Y);
 
-		} while (cpt != 2);
+		} while (cpt != 1);
 
 #ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);

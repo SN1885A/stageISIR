@@ -25,7 +25,7 @@ int main() {
 #endif
 		int i, j, a;
 #ifndef WFILE
-		srand(2);
+		srand(26);
 #endif
 		theta = (double*) calloc(PHI_SIZE , sizeof(double));
 		b = initMatrix(NB_ACTIONS , PHI_SIZE);

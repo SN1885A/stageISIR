@@ -220,8 +220,8 @@ ListIndAction findSameProbLIA(ListIndAction L, double prob, int*size){
 	ListIndAction rL = NULL;
 
 	while(tmp != NULL){
-
 		if(tmp->prob == prob){
+
 			rL = addElementLIA(rL, tmp->action, prob);
 			(*size)++;
 		}
