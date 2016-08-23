@@ -10,17 +10,17 @@
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000 // 1 000 000
 #define REPLAY 1
-//#define WFILE 1
-#define THETA_CONV_VERIF
-//#define POLICY_VERIF
+#define WFILE 1
+//#define THETA_CONV_VERIF
+#define POLICY_VERIF
 //#define DEBUG 1
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 10
+#define GRID_SIZE 5
 
 //State vector
-#define PHI_SIZE 100
+#define PHI_SIZE 25
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -36,7 +36,7 @@
 
 //When you get a reward you get back to...
 #define RX 4
-#define RY 0
+#define RY 4
 
 //Actions
 #define NORTH   0

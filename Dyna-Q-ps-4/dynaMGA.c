@@ -108,7 +108,7 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 	 }
 	 else if(list->prob < r && r <= sum1){
 
-		 subList2 = findSameProbLIA(list , list->prob, &size2);
+		 subList2 = findSameProbLIA(list , list->next->prob, &size2);
 		 if(size2 != 0){
 			 a = listActionRandomLIA(subList2, size2);
 		 }
@@ -117,7 +117,7 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 	 }
 	 else if(sum1 < r && r <= sum2){
 
-		 subList3 = findSameProbLIA(list, list->prob, &size3);
+		 subList3 = findSameProbLIA(list, list->next->next->prob, &size3);
 		 if(size3 != 0){
 			 a = listActionRandomLIA(subList3, size3);
 		 }
@@ -125,7 +125,7 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 			 a = list->next->next->action;
 	 }
 	 else if(sum2 < r && r <= sum3){
-		subList4 = findSameProbLIA(list , list->prob, &size4);
+		subList4 = findSameProbLIA(list , list->next->next->next->prob, &size4);
 		 if(size4 != 0){
 			 a = listActionRandomLIA(subList4, size4);
 		 }
@@ -133,14 +133,17 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 			 a = list->next->next->next->action;
 	 }
 
-/*	 printf("prob0 = %f action = %d\n", list->prob, list->action);
+	/* printf("prob0 = %f action = %d\n", list->prob, list->action);
 	 printf("prob1 = %f action = %d\n", list->next->prob, list->next->action);
 	 printf("prob3 = %f action = %d\n", list->next->next->prob, list->next->next->action);
 	 printf("prob4 = %f action = %d\n", list->next->next->next->prob, list->next->next->next->action);
 
+	 printf("r = %f\n", r);
 	 printf("a = %d\n\n", a);*/
 
  }
+
+ //printf("recompense a = %d\n\n", a);
 
  suppLIA(subList1);
  suppLIA(subList2);
@@ -417,48 +420,44 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			//Select an action
 			//A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
-			//A = softmax(X, Y, phi1, theta, b, F);
-			A = rand()%4;
+			A = softmax(X, Y, phi1, theta, b, F);
+			//A = rand()%4;
 
 			//reward
 			r = 0;
 
-			if ((X == RWX) && (Y == RWY)) {
-				r = REWARD_VALUE;
-				Xnext = RX;
-				Ynext = RY;
-				cpt++;
+			switch (A) {
+			case NORTH:
+				//We cannot move
+				if (X == 0)
+					r = 0;
+				else
+					Xnext = X - 1;
+				break;
+			case EAST:
+				if (Y == GRID_SIZE - 1)
+					r = 0;
+				else
+					Ynext = Y + 1;
+				break;
+			case SOUTH:
+				if (X == GRID_SIZE - 1)
+					r = 0;
+				else
+					Xnext = X + 1;
+				break;
+			case WEST:
+				if (Y == 0)
+					r = 0;
+				else
+					Ynext = Y - 1;
+				break;
+
 			}
 
-			else {
-				switch (A) {
-				case NORTH:
-					//We cannot move
-					if (X == 0)
-						r = 0;
-					else
-						Xnext = X - 1;
-					break;
-				case EAST:
-					if (Y == GRID_SIZE - 1)
-						r = 0;
-					else
-						Ynext = Y + 1;
-					break;
-				case SOUTH:
-					if (X == GRID_SIZE - 1)
-						r = 0;
-					else
-						Xnext = X + 1;
-					break;
-				case WEST:
-					if (Y == 0)
-						r = 0;
-					else
-						Ynext = Y - 1;
-					break;
-
-				}
+			if ((Xnext == RWX) && (Ynext == RWY)) {
+				r = REWARD_VALUE;
+				cpt++;
 			}
 
 			R += r;
