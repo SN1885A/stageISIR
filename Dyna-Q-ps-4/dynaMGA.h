@@ -17,10 +17,10 @@
 
 //Universe definition
 #define NB_ACTIONS 4
-#define GRID_SIZE 2
+#define GRID_SIZE 5
 
 //State vector
-#define PHI_SIZE 4
+#define PHI_SIZE 25
 
 //Gaussian parameters
 #define DISTANCE 10 //10 cm la case
@@ -31,8 +31,8 @@
 #define REWARD_VALUE 0.2
 
 //Rewards' position
-#define RWX 0
-#define RWY 1
+#define RWX 2
+#define RWY 2
 
 //When you get a reward you get back to...
 #define RX 0

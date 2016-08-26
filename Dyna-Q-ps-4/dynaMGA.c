@@ -554,7 +554,8 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 #endif
 
 #ifdef THETA_CONV_VERIF
-		double diff, diffMax = 0;
+		double diff, diffMax;
+		diffMax = 0;
 		for (i = 0; i < PHI_SIZE; i++) {
 			diff = fabsf(oldTheta[i] - theta[i]);
 
