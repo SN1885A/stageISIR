@@ -177,7 +177,7 @@ void multMatrixCarreCol(double* result, double*** mat1, double* mat2,
 		int action) {
 
 	int i, j;
-	for(i = 0; i<PHI_SIZE; i++) result[i] = 0;
+	for(i = 0; i<PHI_SIZE; i++){ result[i] = 0;}
 	for (i = 0; i < PHI_SIZE; i++)
 		for (j = 0; j < PHI_SIZE; j++)
 			result[i] += mat1[action][i][j] * mat2[j];
@@ -378,8 +378,11 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			oldTheta[i] = theta[i];
 
 		//Select a random real state
-		X = rand() % GRID_SIZE;
-		Y = rand() % GRID_SIZE;
+		do{
+			X = rand() % GRID_SIZE;
+			Y = rand() % GRID_SIZE;
+		}
+		while((X == RWX) && (Y == RWY));
 
 		//Generate a feature vector
 		generateVect(phi1, X, Y);
@@ -396,9 +399,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			//printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
-
-			//if (cpt == 1)
-			//	cpt++;
 
 			//next real state
 			Xnext = X;
@@ -443,12 +443,11 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			if ((Xnext == RWX) && (Ynext == RWY)) {
 				r = REWARD_VALUE;
-				//cpt++;
-			}
-			if ((X == RWX) && (Y == RWY)) {
 				cpt++;
 			}
-
+			/*if (cpt == 1) {
+				cpt++;
+			}*/
 
 			R += r;
 			generateVect(phi2, Xnext, Ynext);
@@ -544,7 +543,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Y = Ynext;
 			generateVect(phi1, X, Y);
 
-		} while (cpt != 2);
+		} while (cpt != 1);
 
 #ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
