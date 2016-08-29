@@ -12,8 +12,8 @@
 //#define REPLAY 1
 //#define WFILE 1
 //#define WFILE2 1
-#define THETA_CONV_VERIF
-//#define POLICY_VERIF
+//#define THETA_CONV_VERIF
+#define POLICY_VERIF
 #define SOFTMAX 1
 //#define EGREEDY 1
 //#define RAND 1
