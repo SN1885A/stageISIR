@@ -25,7 +25,7 @@ int main() {
 	pQueue = createPQueue();
 
 	printf("START Dyna-Q\n");
-	srand(time(NULL));
+	srand(2);
 	//Grid initialization
 	int i, j;
 	for(i=0; i<GRID_SIZE; i++) 

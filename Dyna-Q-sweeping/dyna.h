@@ -9,7 +9,7 @@
 #define NB_STEPS 10	 // 10
 #define NB_EPISODES 1000 // 1 000
 #define NB_TRY 20 	 // 20	
-
+#define SWEEPING 1
 #define NB_ACTIONS 4
 
 #define GRID_SIZE 5
@@ -20,14 +20,10 @@
 //Rewards' position
 #define RWX 0
 #define RWY 1
-#define RW2X 0
-#define RW2Y 3
 
 //When you get a reward you get back to...
 #define RX 4
 #define RY 1
-#define R2X 2
-#define R2Y 3
 
 #define NORTH   0
 #define EAST    1

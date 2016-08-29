@@ -42,7 +42,7 @@ int bestActionForTest(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 	int a, action = 0, size = 0;
 	ListMaxAction listMaxAction = NULL;
 
-	if( (i==RWX && j==RWY) || (i==RW2X && j==RW2Y) ) return WIN;
+	if( i==RWX && j==RWY ) return WIN;
 
 	for (a=0; a<NB_ACTIONS; a++)
 		if (qm<Q[i][j][a]){
@@ -63,7 +63,7 @@ int e_greedy(int x, int y, float e, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 	//e-greegy:
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
-	if( (x==RWX && y==RWY) || (x==RW2X && y==RW2Y) || (r < e) ) a = rand()%NB_ACTIONS;
+	if( (x==RWX && y==RWY) || (r < e) ) a = rand()%NB_ACTIONS;
 	else a = bestAction(x, y, Q);
 	
 return a;
@@ -112,27 +112,23 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 		  	int Xnext = X; 
 			int Ynext = Y;
 			int r = 0;
+
 			if ((X==RWX) && (Y==RWY)) {
 				foundReward++;
 				r = REWARD_VALUE;
 				Xnext = RX; 
 				Ynext = RY;
 			}
- 			else if ((X==RW2X) && (Y==RW2Y)) {
- 				foundReward++;
-				r = REWARD_VALUE2;
-				Xnext = R2X; 
-				Ynext = R2Y;
-			}
+
 			else {
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = -1; 
+						if(X==0)  r = -1;
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = -1; 
+						if(Y==GRID_SIZE-1)r = -1;
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
@@ -150,18 +146,52 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 			State nextState;
 			nextState.X = Xnext;
 			nextState.Y = Ynext;
+
 			Sasr sasr;
 			sasr.firstState = firstState;
 			sasr.secondState = nextState;
 			sasr.action = A;
 			sasr.reward = r;
 
+#ifndef SWEEPING
+
+			Q[firstState.X][firstState.Y][sasr.action] += ALPHA * (sasr.reward + GAMMA * bestQ(nextState.X, nextState.Y, Q) - Q[firstState.X][firstState.Y][sasr.action]);
+#endif
+
 			int e = alreadyExist(model.list, sasr);
 			if(e == 0){
 				model.list = addHead(model.list, sasr);
 				model.size++;
 			}
-			 
+
+#ifndef SWEEPING
+
+			for(j=0; j<10 ; j++){
+				if(model.size != 0){
+					List listTmp = model.list;
+					int r = rand()%model.size;
+					int cpt = 0;
+					while(r != cpt){
+						listTmp = listTmp->next;
+						cpt++;
+					}
+
+					Sasr sasrR = model.list->value;
+					State s1 = sasrR.firstState;
+					State s2 = sasrR.secondState;
+
+					int action = sasrR.action;
+					int reward = sasrR.reward;
+
+					Q[s1.X][s1.Y][action] += ALPHA * ((float)reward + GAMMA * bestQ(s2.X, s2.Y, Q) - Q[s1.X][s1.Y][action]);
+				}
+			}
+
+#endif
+
+
+
+#ifdef SWEEPING
 			p = fabs(r + GAMMA * bestQ(Xnext, Ynext, Q) - Q[X][Y][A]);
 			
 			if(p>TETA_P){
@@ -190,7 +220,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 				if(l != NULL){
 					Sasr sasr3 = head(l);
 					l = deleteHeadL(l);
-					p = fabs(sasr3.reward + GAMMA * bestQ(s.X, s.Y, Q) - Q[sasr3.firstState.X][sasr3.firstState.Y][sasr3.action]);
+					p = fabs((float)sasr3.reward + GAMMA * bestQ(s.X, s.Y, Q) - Q[sasr3.firstState.X][sasr3.firstState.Y][sasr3.action]);
 					if(p > TETA_P){
 						PQueueE element2;
 						element2.state = sasr3.firstState;
@@ -201,6 +231,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 					}
 				}
 			}
+#endif
 
 			int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 
@@ -219,13 +250,14 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 		}
 	}
 
+#ifdef SWEEPING
+dynaQReturn.pQueue = pQueue;
+#endif
+
 dynaQReturn.delta = delta;
 dynaQReturn.model = model;
-dynaQReturn.pQueue = pQueue;
 
 return dynaQReturn;
-
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,17 +273,9 @@ void displayConfig(int stateX, int stateY, int grid[GRID_SIZE][GRID_SIZE]){
 				if(i == stateX && j == stateY) printf(" X   ");
 				else printf(" +10 ");
 			}
-			else if( (i == RW2X && j == RW2Y) || ( (i == stateX && j == stateY) && (i == RW2X && j == RW2Y) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" +6  ");
-			}
 			else if( (i == RX && j == RY) || ( (i == stateX && j == stateY) && (i == RX && j == RY) )  ){
 				if(i == stateX && j == stateY) printf(" X   ");
 				else printf(" R1  ");
-			}
-			else if( (i == R2X && j == R2Y) || ( (i == stateX && j == stateY) && (i == R2X && j == R2Y) )  ){
-				if(i == stateX && j == stateY) printf(" X   ");
-				else printf(" R2  ");
 			}
 			else if(i == stateX && j == stateY) printf(" X   ");
 			else printf(" .   ");
@@ -318,9 +342,6 @@ void displayGridDirections(float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 
 			if( i == RWX && j == RWY  ){
 				printf(" +10 ");
-			}
-			else if(i == RW2X && j == RW2Y){
-				printf(" +6  ");
 			}
 			else{
 				action = bestAction(i, j, Q);
