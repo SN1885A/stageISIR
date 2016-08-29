@@ -348,7 +348,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 	PQueue pQueue;
 	PQueueE pQueueE2, pQueueE, head;
-	int i, j, e, a, pas, cpt, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
+	int i, j, e, a, pas, foundReward, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
 	int X, Y, Xnext, Ynext, A, Anext, A2;
 	float d = 0;
 	double delta, r, priority, R = 0, alpdelta;
@@ -373,7 +373,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		pQueue = createPQueue();
 		printf("Episode n°%d\n", e);
 
-		cpt = 0;
+		foundReward = 0;
 
 		for (i = 0; i < PHI_SIZE; i++)
 			oldTheta[i] = theta[i];
@@ -394,7 +394,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		gettimeofday(&start, NULL);
 #endif
 
-		while (cpt != 1){
+		while (foundReward != 1){
 
 			(*step_to_converge)++;
 
@@ -449,7 +449,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 
 			if ((Xnext == RWX) && (Ynext == RWY)) {
 				r = REWARD_VALUE;
-				cpt++;
+				foundReward++;
 			}
 
 			R += r;

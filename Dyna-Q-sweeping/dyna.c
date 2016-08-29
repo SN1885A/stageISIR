@@ -20,26 +20,39 @@ float bestQ(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 }
 
 int bestAction(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1000;
-	int a, action = 0;
+	float qm = -FLT_MAX;
+	int a, action = 0, size = 0;
+	ListMaxAction listMaxAction = NULL;
+
   	for (a=0; a<NB_ACTIONS; a++){ 
     		if (qm<Q[i][j][a]){
       			qm = Q[i][j][a];
-      			action = a;
+      			listMaxAction = addElementListMaxAction(listMaxAction, a, qm, &size);
    		}
 	}
+
+  	action = listMaxActionRandom(listMaxAction, size);
+  	suppListMaxAction(listMaxAction);
+
 return action;
 }
 
 int bestActionForTest(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1;
-	int a, action = 0;
+	float qm = -FLT_MAX;
+	int a, action = 0, size = 0;
+	ListMaxAction listMaxAction = NULL;
+
 	if( (i==RWX && j==RWY) || (i==RW2X && j==RW2Y) ) return WIN;
+
 	for (a=0; a<NB_ACTIONS; a++)
 		if (qm<Q[i][j][a]){
 			qm = Q[i][j][a];
-			action = a;
+			listMaxAction = addElementListMaxAction(listMaxAction, a, qm, &size);
 		}
+
+  	action = listMaxActionRandom(listMaxAction, size);
+  	suppListMaxAction(listMaxAction);
+
 return action;
 }
 
@@ -59,7 +72,7 @@ return a;
 DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A,  int* step_to_converge){
 
 	DynaQReturn dynaQReturn;
-	int a, i, j, pas;
+	int a, i, j, pas, foundReward = 0;
 	float delta = 0;
 	float diff = 0;
 	float p;
@@ -79,6 +92,8 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 	
 	for(i=0; i<NB_EPISODES; i++){
 		
+		foundReward = 0;
+
 		//Select a random state
 		X = rand()%GRID_SIZE; 
 		Y = rand()%GRID_SIZE;
@@ -87,8 +102,8 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 		A = e_greedy(X, Y, EPSILON, Q);
 
 		//Or until I find a reward
-		for (pas=0; pas<NB_STEPS; pas++){
-
+		//for (pas=0; pas<NB_STEPS; pas++){
+		while(foundReward != 1){
 			//printf("Pas n°%d\n", pas);
 
 			State firstState;
@@ -97,12 +112,14 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 		  	int Xnext = X; 
 			int Ynext = Y;
 			int r = 0;
-			if ((X==RWX) && (Y==RWY)) {  
+			if ((X==RWX) && (Y==RWY)) {
+				foundReward++;
 				r = REWARD_VALUE;
 				Xnext = RX; 
 				Ynext = RY;
 			}
- 			else if ((X==RW2X) && (Y==RW2Y)) {  
+ 			else if ((X==RW2X) && (Y==RW2Y)) {
+ 				foundReward++;
 				r = REWARD_VALUE2;
 				Xnext = R2X; 
 				Ynext = R2Y;
@@ -157,6 +174,7 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 			
 			int action, reward;
 			while(pQueue != NULL){
+
 				PQueueE pQueueE = headP(pQueue);
 				pQueue = deleteHead(pQueue);
 				Sasr sasr2 = findSrWithSa(model.list, pQueueE.state, pQueueE.action); 

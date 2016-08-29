@@ -39,6 +39,13 @@ typedef struct dynaQReturn{
 	float delta;
 }DynaQReturn;
 
+//List of actions with the same value
+typedef struct cellA{
+	int action;
+	double value;
+	struct cellA *next;
+}*ListMaxAction;
+
 //List for the model
 List createList();
 Sasr head(List L);
@@ -69,3 +76,8 @@ PQueue deleteHead(PQueue P);
 
 void displayPQueue(PQueue P);
 
+ListMaxAction addElementListQueue(ListMaxAction list, int a, double value);
+ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, int *size);
+int listMaxActionRandom(ListMaxAction list, int size);
+void suppListMaxAction(ListMaxAction L);
+ListMaxAction deleteHeadListMaxAction(ListMaxAction P);
