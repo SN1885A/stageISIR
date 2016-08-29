@@ -99,19 +99,19 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = -1; //R -= gk;}
+						if(X==0)  r = -1; 
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = -1; //R -= gk;}
+						if(Y==GRID_SIZE-1)r = -1; 
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
-						if(X==GRID_SIZE-1) r = -1; //R -= gk;}
+						if(X==GRID_SIZE-1) r = -1; 
 						else Xnext = X + 1;
 					break;
 					case WEST: 
-						if(Y==0) r = -1; //R -= gk;}
+						if(Y==0) r = -1; 
 						else Ynext = Y - 1;
 					break;
 				}

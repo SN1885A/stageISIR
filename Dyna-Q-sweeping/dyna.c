@@ -98,13 +98,11 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 			int Ynext = Y;
 			int r = 0;
 			if ((X==RWX) && (Y==RWY)) {  
-				//R+= 10*gk; 
 				r = REWARD_VALUE;
 				Xnext = RX; 
 				Ynext = RY;
 			}
  			else if ((X==RW2X) && (Y==RW2Y)) {  
-				//R+= 10*gk; 
 				r = REWARD_VALUE2;
 				Xnext = R2X; 
 				Ynext = R2Y;
@@ -113,19 +111,19 @@ DynaQReturn dyna_Q(Model model, PQueue pQueue, float Q[GRID_SIZE][GRID_SIZE][NB_
 				switch (A) {
 					case NORTH: 
 						//We cannot move
-						if(X==0)  r = -1; //R -= gk;}
+						if(X==0)  r = -1; 
 						else Xnext = X - 1;
 					break;
 					case EAST: 
-						if(Y==GRID_SIZE-1)r = -1; //R -= gk;}
+						if(Y==GRID_SIZE-1)r = -1; 
 						else Ynext = Y + 1;
 					break;
 					case SOUTH:
-						if(X==GRID_SIZE-1) r = -1; //R -= gk;}
+						if(X==GRID_SIZE-1) r = -1;
 						else Xnext = X + 1;
 					break;
 					case WEST: 
-						if(Y==0) r = -1; //R -= gk;}
+						if(Y==0) r = -1;
 						else Ynext = Y - 1;
 					break;
 					
