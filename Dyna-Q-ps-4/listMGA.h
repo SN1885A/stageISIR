@@ -28,6 +28,8 @@ typedef struct cellAP{
 	struct cellAP *next;
 }*ListIndAction;
 
+////////////////////////////////////////////////////////////////////////////////////////
+
 PQueue createPQueue();
 int emptyP(PQueue P);
 int equalsPQE(PQueueE e1, PQueueE e2);
@@ -49,6 +51,7 @@ ListMaxAction addElementListMaxAction(ListMaxAction list, int a, double value, i
 int listMaxActionRandom(ListMaxAction list, int size);
 void suppListMaxAction(ListMaxAction L);
 ListMaxAction deleteHeadListMaxAction(ListMaxAction P);
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 ListIndAction addHeadLIA(ListIndAction L, int action, double prob);

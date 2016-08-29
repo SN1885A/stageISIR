@@ -25,8 +25,7 @@ int bestAction(double* phi, double* theta, double** b, double*** F) {
 
 		if (result >= best) {
 			best = result;
-			listMaxAction = addElementListMaxAction(listMaxAction, a, best,
-					&size);
+			listMaxAction = addElementListMaxAction(listMaxAction, a, best, &size);
 
 		}
 	}
@@ -34,6 +33,7 @@ int bestAction(double* phi, double* theta, double** b, double*** F) {
 	action = listMaxActionRandom(listMaxAction, size);
 	suppListMaxAction(listMaxAction);
 	free(tmp);
+
 	return action;
 }
 
@@ -133,7 +133,8 @@ int softmax(int x, int y, double* phi, double* theta, double** b, double*** F){
 			 a = list->next->next->next->action;
 	 }
 
-	/* printf("prob0 = %f action = %d\n", list->prob, list->action);
+	/* printf("State = (%d, %d)\n", x, y);
+	 printf("prob0 = %f action = %d\n", list->prob, list->action);
 	 printf("prob1 = %f action = %d\n", list->next->prob, list->next->action);
 	 printf("prob3 = %f action = %d\n", list->next->next->prob, list->next->next->action);
 	 printf("prob4 = %f action = %d\n", list->next->next->next->prob, list->next->next->next->action);
@@ -161,6 +162,7 @@ int e_greedy(int x, int y, double* phi, double* theta, float e, double** b,
 
 	int a = 0;
 	double r = (double) rand() / RAND_MAX;
+
 	//e-greegy:
 	//With a proba e we randomly select a action
 	//With a proba (1-e) we take the best action
@@ -344,7 +346,6 @@ void generateVect(double* phi, int X, int Y) {
 
 void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, int* step_to_converge, int testSeed) {
 
-	//Declarations
 	PQueue pQueue;
 	PQueueE pQueueE2, pQueueE, head;
 	int i, j, e, a, pas, cpt, cptStop = 0, test = 0, step_to_converge_per_episode = 0;
@@ -368,9 +369,9 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 #endif
 
 	for (e = 0; e < NB_EPISODES; e++) {
+
 		pQueue = createPQueue();
-		//if(e%100 == 0)
-			printf("Episode n°%d\n", e);
+		printf("Episode n°%d\n", e);
 
 		cpt = 0;
 
@@ -393,7 +394,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		gettimeofday(&start, NULL);
 #endif
 
-		do {
+		while (cpt != 1){
 
 			(*step_to_converge)++;
 
@@ -405,9 +406,15 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Ynext = Y;
 
 			//Select an action
-			//A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
+#ifdef EGREEDY
+			A = e_greedy(X, Y, phi1, theta, EPSILON, b, F);
+#endif
+#ifdef SOFTMAX
 			A = softmax(X, Y, phi1, theta, b, F);
-			//A = rand()%4;
+#endif
+#ifdef RAND
+			A = rand()%4;
+#endif
 
 			//reward
 			r = 0;
@@ -445,9 +452,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 				r = REWARD_VALUE;
 				cpt++;
 			}
-			/*if (cpt == 1) {
-				cpt++;
-			}*/
 
 			R += r;
 			generateVect(phi2, Xnext, Ynext);
@@ -543,7 +547,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			Y = Ynext;
 			generateVect(phi1, X, Y);
 
-		} while (cpt != 1);
+		}
 
 #ifdef POLICY_VERIF
 		int verif = verifPolicy(theta, b, F);
@@ -562,7 +566,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 				diffMax = diff;
 
 		}
-		//fprintf(testSeed, "%d;%f\n", e, diffMax);
 		if(diffMax < THETA_CONV) {
 			cptStop++;
 		}
@@ -580,13 +583,14 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 		fprintf(fileTimeReward, "%ld;%f\n", (end.tv_sec*1000000+end.tv_usec - (start.tv_sec*1000000+start.tv_usec)), R);
 #endif
 
-		//fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
+#ifdef WFILE2
+		fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
+#endif
 		step_to_converge_per_episode = 0;
 
 		//suppPQueue(pQueue);
 	}
 
-	//libéréée ... délivréée
 	freeMatrix(resultTmp4, PHI_SIZE, PHI_SIZE);
 	free(resultTmp1);
 	free(resultTmp2);
@@ -619,7 +623,6 @@ int verifPolicy(double* theta, double** b, double*** F) {
 
 					action = listMaxAction->action;
 
-					//Policy verif
 					if (i == RWX && j != RWY) {
 						if (j < RWY) {
 							if (action != EAST)
@@ -697,7 +700,6 @@ void displayGridDirections(double* theta, double** b, double*** F) {
 				generateVect(phi, i, j);
 				action = bestAction(phi, theta, b, F);
 
-				//Policy verif
 				if (i == RWX && j != RWY) {
 					if (j < RWY) {
 						if (action != EAST)
