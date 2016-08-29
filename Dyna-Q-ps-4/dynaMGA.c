@@ -530,11 +530,9 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 						delta = best - theta[j];
 
 						//Updating theta
-
 						theta[j] = theta[j] + (ALPHA*delta);
 
 						//Put j on the PQueue with priority |delta|
-
 						pQueueE2.priority = fabs(delta);
 
 						pQueueE2.i = j;
