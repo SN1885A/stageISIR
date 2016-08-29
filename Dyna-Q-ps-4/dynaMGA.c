@@ -445,7 +445,6 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 				else
 					Ynext = Y - 1;
 				break;
-
 			}
 
 			if ((Xnext == RWX) && (Ynext == RWY)) {
