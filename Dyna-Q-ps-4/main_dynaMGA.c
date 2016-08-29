@@ -27,7 +27,7 @@ int main() {
 #endif
 	int i, j, a;
 #ifndef WFILE
-	srand(0);
+	srand(67);
 #endif
 
 	theta = (double*) calloc(PHI_SIZE, sizeof(double));

@@ -401,7 +401,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			//printf("Step to converge = %d\n", *step_to_converge);
 			step_to_converge_per_episode++;
 
-			//next real state
+			//Next real state
 			Xnext = X;
 			Ynext = Y;
 
@@ -416,32 +416,36 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 			A = rand()%4;
 #endif
 
-			//reward
+			//Reward
 			r = 0;
 
 			switch (A) {
 			case NORTH:
 				//We cannot move
-				if (X == 0)
-					r = 0;
+				if (X == 0){
+					//r = -1;
+				}
 				else
 					Xnext = X - 1;
 				break;
 			case EAST:
-				if (Y == GRID_SIZE - 1)
-					r = 0;
+				if (Y == GRID_SIZE - 1){
+					//r = -1;
+				}
 				else
 					Ynext = Y + 1;
 				break;
 			case SOUTH:
-				if (X == GRID_SIZE - 1)
-					r = 0;
+				if (X == GRID_SIZE - 1){
+					//r =-1;
+				}
 				else
 					Xnext = X + 1;
 				break;
 			case WEST:
-				if (Y == 0)
-					r = 0;
+				if (Y == 0){
+					// r = -1;
+				}
 				else
 					Ynext = Y - 1;
 				break;

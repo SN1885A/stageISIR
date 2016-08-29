@@ -9,7 +9,7 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000 // 100 000 000
-//#define REPLAY 1
+#define REPLAY 1
 //#define WFILE 1
 //#define WFILE2 1
 //#define THETA_CONV_VERIF
