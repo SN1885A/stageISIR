@@ -35,9 +35,6 @@ int main() {
 	float delta = 0;
 	for(i=0; i<NB_TRY; i++) {
 		delta = qLearning(i, Q, X, Y, A, &step_to_converge);
-		//printf("delta = %5.3f \n", delta);
-		//printf("\n\n");
-		//displayQ(Q);
 		if(delta<TETA_Q) break;
 	}
 

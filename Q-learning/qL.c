@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
 #include "qL.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 float bestQ(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-  float qm = -1000;
+  float qm = -FLT_MAX;
   int a;
   for (a=0; a<NB_ACTIONS; a++) 
     if (qm<Q[i][j][a]) {
@@ -19,25 +15,38 @@ float bestQ(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
 }
 
 int bestAction(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1000;
-	int a, action = 0;
-  	for (a=0; a<NB_ACTIONS; a++) 
+	float qm = -FLT_MAX;
+	int a, action = 0, size = 0;
+	ListMaxAction listMaxAction = NULL;
+
+  	for (a=0; a<NB_ACTIONS; a++){
     		if (qm<Q[i][j][a]){
       			qm = Q[i][j][a];
-      			action = a;
-   		}
+      			listMaxAction = addElementListMaxAction(listMaxAction, a, qm, &size);
+    		}
+  	}
+
+  	action = listMaxActionRandom(listMaxAction, size);
+  	suppListMaxAction(listMaxAction);
+
 return action;
 }
 
 int bestActionForTest(int i, int j, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS]){
-	float qm = -1;
-	int a, action = 0;
+	float qm = -FLT_MAX;
+	int a, action = 0, size = 0;
+	ListMaxAction listMaxAction = NULL;
+
 	if( (i==RWX && j==RWY) || (i==RW2X && j==RW2Y) ) return WIN;
-	for (a=0; a<NB_ACTIONS; a++)
+	for (a=0; a<NB_ACTIONS; a++){
 		if (qm<Q[i][j][a]){
 			qm = Q[i][j][a];
-			action = a;
+			listMaxAction = addElementListMaxAction(listMaxAction, a, qm, &size);
 		}
+	}
+	action = listMaxActionRandom(listMaxAction, size);
+	suppListMaxAction(listMaxAction);
+
 return action;
 }
 
@@ -56,7 +65,7 @@ return a;
 
 float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, int Y, int A, int* step_to_converge){
 
-	int a, i, j, p;
+	int a, i, j, p, foundReward;
 	float delta = 0;
 	float diff = 0;
 	float Qold[GRID_SIZE][GRID_SIZE][NB_ACTIONS];
@@ -71,6 +80,9 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 	}
 
 	for(i=0; i<NB_EPISODES; i++){
+
+		foundReward = 0;
+
 		//Select a random state
 		X = rand()%GRID_SIZE; 
 		Y = rand()%GRID_SIZE;
@@ -78,19 +90,21 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 		//Select an action with e-greedy policy
 		A = e_greedy(X, Y, EPSILON, Q);
 
-		for (p=0; p<NB_STEPS; p++){
+		//for (p=0; p<NB_STEPS; p++){
+		while(foundReward != 1){
 
 		  	int Xnext = X; 
 			int Ynext = Y;
 			int r = 0;
+
 			if ((X==RWX) && (Y==RWY)) {  
-				//R+= 10*gk; 
+				foundReward++;
 				r = REWARD_VALUE;
 				Xnext = RX; 
 				Ynext = RY;
 			}
  			else if ((X==RW2X) && (Y==RW2Y)) {  
-				//R+= 10*gk; 
+ 				foundReward++;
 				r = REWARD_VALUE2;
 				Xnext = R2X; 
 				Ynext = R2Y;
@@ -116,9 +130,6 @@ float qLearning(int num_it, float Q[GRID_SIZE][GRID_SIZE][NB_ACTIONS], int X, in
 					break;
 				}
 			}
-
-			
-			//int aNext = e_greedy(Xnext, Ynext, EPSILON, Q);
 
 			Q[X][Y][A] += ALPHA * (r + GAMMA * bestQ(Xnext, Ynext, Q) - Q[X][Y][A]);
 
