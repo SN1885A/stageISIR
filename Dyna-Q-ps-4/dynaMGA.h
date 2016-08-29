@@ -36,8 +36,8 @@
 #define REWARD_VALUE 0.2
 
 //Rewards' position
-#define RWX 0
-#define RWY 1
+#define RWX 2
+#define RWY 2
 
 //When you get a reward you get back to...
 #define RX 0
