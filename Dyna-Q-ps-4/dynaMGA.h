@@ -9,11 +9,11 @@
 //Experimentation definition
 #define NB_STEPS 5 // 10
 #define NB_EPISODES 100000000 // 100 000 000
-#define REPLAY 1
-//#define WFILE 1
-//#define WFILE2 1
-//#define THETA_CONV_VERIF
-#define POLICY_VERIF
+//#define REPLAY 1
+#define WFILE 1
+#define WFILE2 1
+#define THETA_CONV_VERIF
+//#define POLICY_VERIF
 #define SOFTMAX 1
 //#define EGREEDY 1
 //#define RAND 1
@@ -52,7 +52,7 @@
 //All constants
 #define ALPHA 	0.3
 #define GAMMA 	0.7
-#define BETA 	30 //100
+#define BETA 	3 //100
 #define THETA_CONV  0.0001
 #define EPSILON 0.06 //0.006
 #define HAVE_REALLY_CONV 20

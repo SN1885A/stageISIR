@@ -568,6 +568,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 				diffMax = diff;
 
 		}
+		fprintf(testSeed, "%d;%f\n", e, diffMax);
 		if(diffMax < THETA_CONV) {
 			cptStop++;
 		}
@@ -586,7 +587,7 @@ void dyna_MG(double* theta, double** b, double*** F, int* episode_to_converge, i
 #endif
 
 #ifdef WFILE2
-		fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
+		//fprintf(testSeed, "%d;%d\n", e, step_to_converge_per_episode);
 #endif
 		step_to_converge_per_episode = 0;
 

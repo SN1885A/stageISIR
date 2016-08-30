@@ -18,7 +18,7 @@ int main() {
 #ifdef WFILE
 	int it;
 	FILE *testSeed = NULL;
-	testSeed = fopen("SeedWithReplay_5x5_softmax_2", "w");
+	testSeed = fopen("WithoutReplay_diffMax", "w");
 
 	for(it = 0; it < 50; it++) {
 
